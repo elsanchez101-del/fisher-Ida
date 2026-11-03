@@ -1,0 +1,6 @@
+,J_train,J_train,acc_test,acc_test,angulo_vs_fisher,angulo_vs_fisher
+,mean,std,mean,std,mean,std
+metodo,,,,,,
+Diferencia de medias,0.273,0.109,0.579,0.034,60.132,6.784
+Fisher,1.187,0.208,0.695,0.032,0.0,0.0
+PCA (PC1),0.202,0.119,0.559,0.038,83.933,2.799
