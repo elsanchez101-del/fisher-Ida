@@ -1,7 +1,7 @@
 ---
 title: "Discriminante lineal de Fisher: desarrollo matemático y resultados preliminares"
-subtitle: "Elison Sanchez, Rodolfo Brandariz, Marcelo Bravo y Marcelo Torres"
-author: "Integrantes: (completar)"
+subtitle: "Álgebra Lineal Aplicada — Entrega parcial del proyecto
+author: "Elison Sanchez, Rodolfo Brandariz, Marcelo Bravo y Marcelo Torres"
 date: "Noviembre 2026"
 geometry: margin=2.3cm
 fontsize: 11pt
