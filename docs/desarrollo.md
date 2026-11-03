@@ -98,18 +98,21 @@ Todo es reproducible con `python experiments/run_all.py` (semillas $2026+k$, $k=
 
 **Experimento B: pocas muestras y variable redundante.** $p=40$ variables (2 informativas, 1 copia ruidosa de $x_1$, 37 de ruido), solo $N=30$ de entrenamiento y 1000 de prueba; $\mu_2=(1.5,0)$ en las dos primeras. Aquí $\operatorname{rango}(S_W)\le N-2=28<40$: en la repetición 0, $S_W$ tiene 12 autovalores nulos y número de condición $\sim10^{18}$.
 
-| $\gamma$ | 0 | $10^{-4}$ | $10^{-2}$ | 0.1 | 1 | 3 |
-|---|---|---|---|---|---|---|
-| Exactitud (prueba) | 0.513 | 0.547 | 0.552 | 0.571 | 0.605 | 0.626 |
+| $\gamma$ | 0 | $10^{-4}$ | $10^{-3}$ | $10^{-2}$ | 0.1 | 0.3 | 1 | 3 |
+|---|---|---|---|---|---|---|---|---|
+| Exactitud media (prueba) | 0.512 | 0.547 | 0.548 | 0.552 | 0.571 | 0.589 | 0.605 | 0.626 |
+| Desviación estándar | 0.020 | 0.042 | 0.041 | 0.039 | 0.035 | 0.025 | 0.021 | 0.015 |
 
-Sin regularización ($\gamma=0$) el sistema es numéricamente inestable y el resultado es casi azar (0.51). La exactitud mejora con $\gamma$ hasta el mayor valor de la rejilla. El $\gamma$ elegido por validación cruzada (5 pliegues, dentro del entrenamiento) logra 0.601 ± 0.03 en prueba, algo por debajo del mejor $\gamma$ fijo de la rejilla, ya que la validación con 30 puntos es ruidosa y eligió valores distintos en cada repetición (de $10^{-4}$ a 3).
+Sin regularización ($\gamma=0$), el sistema es numéricamente inestable y obtiene una exactitud media de 0.512, cercana al azar. En la rejilla evaluada, la exactitud media de prueba aumenta hasta 0.626 para $\gamma=3$. Sin embargo, este último valor es descriptivo y no debe utilizarse para seleccionar el parámetro, ya que corresponde al conjunto de prueba.
+
+El parámetro $\gamma$ seleccionado mediante validación cruzada de cinco pliegues, realizada exclusivamente dentro del conjunto de entrenamiento, alcanza una exactitud media de 0.5881 y una desviación estándar de 0.0421 en prueba. Los valores seleccionados variaron entre las diez repeticiones, incluyendo $\gamma=0$, $10^{-4}$, 0.1, 0.3, 1 y 3. Esto evidencia que la selección del parámetro es sensible al tamaño reducido de la muestra de entrenamiento.
 
 ![Regularización](../figures/regularizacion.png){width=50%}
 
 # 8. Limitaciones y trabajo restante
 
 - Los datos son sintéticos y cumplen el supuesto de covarianza común; falta probar covarianzas distintas (donde aparece QDA), clases no separables linealmente y etiquetas ruidosas. **No se concluye que Fisher domine siempre.**
-- La rejilla de $\gamma$ termina en 3 y el mejor valor está en el borde: para la entrega final, ampliarla.
+- La rejilla de $\gamma$ termina en 3 y la mayor exactitud descriptiva de prueba se observa en ese extremo. Para la entrega final se ampliará la rejilla y se mantendrá la selección del parámetro mediante validación cruzada dentro del entrenamiento, sin utilizar el conjunto de prueba para elegirlo.
 - Para $\gamma=0$ usamos `solve` sobre una matriz casi singular; una comparación con pseudoinversa queda pendiente.
 - Pendiente: un conjunto de datos real y el caso multiclase con datos reales.
 
@@ -129,16 +132,17 @@ El proyecto se desarrolla de manera colaborativa. Las responsabilidades iniciale
 | Marcelo Torres | Experimentación y documentación | Experimentos de regularización, análisis de resultados, gráficos y documentación del repositorio. |
 
 # 11. Cronograma de actividades pendientes
+## 12. Cronograma de actividades
 
-| Etapa | Actividad | Resultado esperado |
-|---|---|---|
-| 1 | Revisión y corrección matemática | Desarrollo matemático validado. |
-| 2 | Revisión de la implementación | Código probado y reproducible. |
-| 3 | Ampliación de experimentos | Comparaciones y resultados adicionales. |
-| 4 | Interpretación de resultados | Análisis de gráficos y métricas. |
-| 5 | Integración documental | Documento, referencias y README completos. |
-| 6 | Preparación audiovisual | Guion y video con participación de los cuatro integrantes. |
-| 7 | Verificación final | Repositorio organizado y versión identificada. |
+| Actividad | Responsable(s) | Fecha límite | Estado |
+|---|---|---|---|
+| Revisión y corrección matemática | Elison Sanchez y Rodolfo Brandariz | 2/11/2026 | En revisión |
+| Verificación de la implementación y pruebas | Marcelo Bravo | 2/11/2026 | En revisión |
+| Actualización de experimentos y resultados | Marcelo Bravo y Marcelo Torres | 2/11/2026 | En revisión |
+| Interpretación y discusión de resultados | Todos los integrantes | 6/11/2026 | Pendiente |
+| Actualización de documentos y referencias | Rodolfo Brandariz y Marcelo Torres | 7/11/2026 | En revisión |
+| Preparación y grabación del video | Todos los integrantes | 7/11/2026 | Pendiente |
+| Verificación final del repositorio y entrega | Todos los integrantes | 9/11/2026 | Pendiente |
 
 # Referencias
 
