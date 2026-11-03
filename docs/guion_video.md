@@ -89,9 +89,10 @@ usando los mismos puntos con los que ajustamos.
 **Pantalla:** Archivo `src/fisher.py` y ejecución de `pytest`.
 
 Bueno, ahora pasamos al código. Programamos todo en Python con NumPy. Para sacar $w$ resolvemos el sistema
-con `solve`, sin calcular la inversa. Además armamos 8 pruebas: que salga el ejemplo a mano, que $J$ no
-cambie al escalar $w$, que ninguna de 500 direcciones al azar le gane a Fisher, el rango de $S_B$, y que
-nuestro resultado coincida con el de scikit-learn. Y coincide: la diferencia es del orden de $10^{-16}$.
+con `solve`, sin calcular la inversa. Además armamos 13 pruebas: que salga el ejemplo a mano, que $J$ no
+cambie al escalar $w$, que ninguna de 500 direcciones al azar le gane a Fisher, que el código avise si las
+medias son iguales o si $S_W$ es singular, y que nuestro resultado coincida con el de scikit-learn. Y
+coincide: la diferencia es del orden de $10^{-16}$.
 
 ## Experimento con datos correlacionados (6:15 a 7:45)
 
@@ -114,9 +115,11 @@ de la nube, pero esa dirección no separa las clases porque PCA ni siquiera mira
 
 Por último, nos preguntamos qué pasa cuando hay pocos datos. Probamos con 30 datos y 40 variables, y ahí
 $S_W$ se vuelve singular: tiene 12 autovalores nulos y un número de condición de casi $10^{18}$. Sin
-regularizar, el método acierta 51 %, que es prácticamente como lanzar una moneda. Pero si usamos
-$S_W + \lambda I$, la matriz ya se puede invertir y la exactitud sube hasta 63 %. El $\lambda$ lo elegimos con
-validación cruzada, usando solo el entrenamiento, para no hacer trampa con los datos de prueba.
+regularizar, el método acierta 51 %, que es prácticamente como lanzar una moneda, y con la pseudoinversa
+llega a 56 %. Pero si usamos $S_W + \lambda I$, la matriz ya se puede invertir y la exactitud sube hasta 63 %.
+Lo curioso es que, con $\lambda$ grande, el resultado queda casi igual al de la diferencia de medias, que es
+justo lo que dice la teoría: cuando $\lambda$ crece, $w$ tiende a $d$. El $\lambda$ lo elegimos con validación
+cruzada, usando solo el entrenamiento, para no hacer trampa con los datos de prueba, y con eso llegamos a 62 %.
 
 ## Conclusiones y limitaciones (8:45 a 9:35)
 
@@ -126,7 +129,7 @@ validación cruzada, usando solo el entrenamiento, para no hacer trampa con los 
 En resumen, Fisher mejora la dirección de las medias porque toma en cuenta cómo están dispersas las clases,
 y cuando hay pocos datos hace falta regularizar. Ahora, también tenemos que decir las limitaciones: usamos
 datos sintéticos con la misma covarianza en las dos clases, que es justo el caso que le conviene a Fisher, y
-el mejor $\lambda$ nos quedó en el extremo de los valores que probamos. Así que no podemos decir que Fisher
+con muy pocos datos Fisher termina pareciéndose a la diferencia de medias. Así que no podemos decir que Fisher
 siempre sea el mejor.
 
 ## Cierre (9:35 a 10:00)

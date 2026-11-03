@@ -46,7 +46,7 @@ $$\max J = d^\top S_W^{-1}d \quad(\text{distancia de Mahalanobis al cuadrado}).$
 $$J=\frac{(v^\top a)^2}{\|v\|^2},\quad a=S_W^{-1/2}d .$$
 Por Cauchy–Schwarz, $(v^\top a)^2\le\|v\|^2\|a\|^2$, con igualdad si y solo si $v=ca$. Luego $J\le\|a\|^2=d^\top S_W^{-1}d$ y la igualdad ocurre para $v=cS_W^{-1/2}d$, es decir $w=S_W^{-1/2}v=c\,S_W^{-1}d$. $\blacksquare$
 
-**Casos.** Si $S_W=\sigma^2I$, entonces $w\propto d$ (diferencia de medias): no hay correlación que corregir. Si $d=0$, $J\equiv0$ y no hay dirección preferida. En la práctica resolvemos el sistema $S_Ww=d$ sin calcular $S_W^{-1}$.
+**Casos.** Si $S_W=\sigma^2I$, entonces $w\propto d$ (diferencia de medias): no hay correlación que corregir. Si $d=0$, $J\equiv0$ y no hay dirección preferida; en ese caso el código lanza un error en lugar de devolver un vector sin sentido. En la práctica resolvemos el sistema $S_Ww=d$ sin calcular $S_W^{-1}$.
 
 # 4. Formulación de Rayleigh y varias clases
 
@@ -98,22 +98,40 @@ Todo es reproducible con `python experiments/run_all.py` (semillas $2026+k$, $k=
 
 **Experimento B: pocas muestras y variable redundante.** $p=40$ variables (2 informativas, 1 copia ruidosa de $x_1$, 37 de ruido), solo $N=30$ de entrenamiento y 1000 de prueba; $\mu_2=(1.5,0)$ en las dos primeras. Aquí $\operatorname{rango}(S_W)\le N-2=28<40$: en la repetición 0, $S_W$ tiene 12 autovalores nulos y número de condición $\sim10^{18}$.
 
-| $\gamma$ | 0 | $10^{-4}$ | $10^{-3}$ | $10^{-2}$ | 0.1 | 0.3 | 1 | 3 |
-|---|---|---|---|---|---|---|---|---|
-| Exactitud media (prueba) | 0.512 | 0.547 | 0.548 | 0.552 | 0.571 | 0.589 | 0.605 | 0.626 |
-| Desviación estándar | 0.020 | 0.042 | 0.041 | 0.039 | 0.035 | 0.025 | 0.021 | 0.015 |
+| $\gamma$ | Exactitud media (prueba) | Desviación estándar |
+|---|---|---|
+| 0 | 0.513 | 0.035 |
+| $10^{-4}$ | 0.547 | 0.041 |
+| $10^{-3}$ | 0.548 | 0.041 |
+| $10^{-2}$ | 0.552 | 0.039 |
+| 0.1 | 0.571 | 0.035 |
+| 0.3 | 0.589 | 0.025 |
+| 1 | 0.605 | 0.020 |
+| 3 | 0.626 | 0.015 |
+| 10 | 0.630 | 0.010 |
+| 30 | 0.629 | 0.011 |
+| 100 | 0.629 | 0.010 |
 
-Sin regularización ($\gamma=0$), el sistema es numéricamente inestable y obtiene una exactitud media de 0.512, cercana al azar. En la rejilla evaluada, la exactitud media de prueba aumenta hasta 0.626 para $\gamma=3$. Sin embargo, este último valor es descriptivo y no debe utilizarse para seleccionar el parámetro, ya que corresponde al conjunto de prueba.
+Como referencia, en las mismas 10 repeticiones medimos también:
 
-El parámetro $\gamma$ seleccionado mediante validación cruzada de cinco pliegues, realizada exclusivamente dentro del conjunto de entrenamiento, alcanza una exactitud media de 0.5881 y una desviación estándar de 0.0421 en prueba. Los valores seleccionados variaron entre las diez repeticiones, incluyendo $\gamma=0$, $10^{-4}$, 0.1, 0.3, 1 y 3. Esto evidencia que la selección del parámetro es sensible al tamaño reducido de la muestra de entrenamiento.
+| Método de comparación | Exactitud media (prueba) | Desviación estándar |
+|---|---|---|
+| Pseudoinversa, $w=S_W^{+}d$ (sin regularizar) | 0.562 | 0.027 |
+| Diferencia de medias, $w\propto d$ | 0.628 | 0.010 |
+| $\gamma$ elegido por validación cruzada | 0.619 | 0.020 |
 
-![Regularización](../figures/regularizacion.png){width=50%}
+Sin regularización ($\gamma=0$), el sistema es numéricamente inestable y la exactitud media es 0.513, cercana al azar. El código ahora avisa cuando $S_W$ es numéricamente singular (número de condición mayor que $10^{12}$). Con la pseudoinversa la exactitud sube a 0.562, pero, como señala [5], esto no resuelve el criterio original cuando $S_W$ es singular: solo elige una de las muchas direcciones posibles, por eso la usamos únicamente para comparar.
+
+Al aumentar $\gamma$, la exactitud media crece hasta 0.630 y luego se estabiliza. Esto coincide con la teoría de la sección 6: cuando $\lambda\to\infty$, $w_\lambda$ tiende a la dirección de $d$, y de hecho los valores grandes de $\gamma$ quedan prácticamente iguales a la diferencia de medias (0.628). Con tan pocos datos, $S_W$ se estima mal y lo mejor es apoyarse casi solo en las medias. Estos valores de prueba son descriptivos y no se usan para elegir el parámetro.
+
+El parámetro $\gamma$ elegido por validación cruzada de cinco pliegues, hecha solo con el entrenamiento, alcanza una exactitud media de 0.619 (desviación estándar 0.020) en prueba. Los valores elegidos variaron entre repeticiones ($10^{-4}$, 0.3, 1, 3, 10, 30, 100), lo que muestra que la selección es sensible al tamaño reducido de la muestra.
+
+![Regularización, pseudoinversa y diferencia de medias](../figures/regularizacion.png){width=60%}
 
 # 8. Limitaciones y trabajo restante
 
 - Los datos son sintéticos y cumplen el supuesto de covarianza común; falta probar covarianzas distintas (donde aparece QDA), clases no separables linealmente y etiquetas ruidosas. **No se concluye que Fisher domine siempre.**
-- La rejilla de $\gamma$ termina en 3 y la mayor exactitud descriptiva de prueba se observa en ese extremo. Para la entrega final se ampliará la rejilla y se mantendrá la selección del parámetro mediante validación cruzada dentro del entrenamiento, sin utilizar el conjunto de prueba para elegirlo.
-- Para $\gamma=0$ usamos `solve` sobre una matriz casi singular; una comparación con pseudoinversa queda pendiente.
+- En el experimento B el mejor desempeño se parece al de la diferencia de medias, así que con $N<p$ la ventaja de Fisher depende de cuánta regularización se use.
 - Pendiente: un conjunto de datos real y el caso multiclase con datos reales.
 
 # 9. Relación con LDA probabilístico
@@ -131,8 +149,7 @@ El proyecto se desarrolla de manera colaborativa. Las responsabilidades iniciale
 | Marcelo Bravo | Implementación computacional | Desarrollo y revisión del código Python, implementación del algoritmo y comparación con PCA. |
 | Marcelo Torres | Experimentación y documentación | Experimentos de regularización, análisis de resultados, gráficos y documentación del repositorio. |
 
-# 11. Cronograma de actividades pendientes
-## 12. Cronograma de actividades
+# 11. Cronograma de actividades
 
 | Actividad | Responsable(s) | Fecha límite | Estado |
 |---|---|---|---|
