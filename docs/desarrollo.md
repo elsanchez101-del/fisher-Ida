@@ -19,6 +19,15 @@ Tenemos datos $x_i\in\mathbb R^p$ y sabemos a cuál de dos clases pertenece cada
 
 **Alcance.** Hicimos completo el caso de dos clases: la teoría, el código y los experimentos. El caso de más clases solo lo vemos en la teoría y en una prueba sobre el rango de $S_B$. Todos los datos son sintéticos, gaussianos y con la misma covarianza en las dos clases; no trabajamos con datos reales, con covarianzas distintas (eso llevaría a QDA) ni con clases que no se puedan separar con una recta.
 
+**Conexión con el curso.** Todo el problema se resuelve con herramientas de álgebra lineal:
+
+- proyectar un dato sobre una recta es un **producto interno**, $y=w^\top x$;
+- el criterio de Fisher es un cociente de **formas cuadráticas** con matrices **simétricas semidefinidas positivas** ($S_W$ y $S_B$);
+- el máximo se demuestra con la **desigualdad de Cauchy–Schwarz** (sección 3);
+- calcular $w$ es resolver un **sistema lineal**, $S_Ww=\mu_1-\mu_2$, sin invertir la matriz;
+- el caso de varias clases es un **problema de autovalores generalizados**, $S_Bw=\lambda S_Ww$ (sección 4);
+- con pocos datos, $S_W$ tiene **rango** menor que $p$, es **singular** y está mal **condicionada**; se corrige con la **regularización** $S_W+\lambda I$ (secciones 6 y 7).
+
 Notación para dos clases $\mathcal C_1,\mathcal C_2$: medias $\mu_k$, dispersiones $S_k=\sum_{x\in\mathcal C_k}(x-\mu_k)(x-\mu_k)^\top$, y dispersión intraclase $S_W=S_1+S_2$. Sea $d=\mu_1-\mu_2$.
 
 **Por qué no basta la distancia entre medias.** Lo primero que se nos ocurre es buscar el $w$ que aleje más las medias proyectadas, es decir, maximizar $(w^\top d)^2$. El problema es que eso no tiene máximo: si duplicamos $w$, el valor se multiplica por cuatro. Podríamos fijar $\|w\|=1$, y entonces la respuesta sería $w\propto d$, pero esa dirección no toma en cuenta la forma de las nubes de puntos. Cuando las variables están correlacionadas, proyectar sobre $d$ puede hacer que las dos clases se encimen.
