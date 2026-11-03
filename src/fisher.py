@@ -1,5 +1,10 @@
 """Discriminante lineal de Fisher implementado desde cero (numpy)."""
+import warnings
+
 import numpy as np
+
+# Por encima de este número de condición, S_W se considera numéricamente singular.
+COND_MAX = 1e12
 
 
 def class_stats(X, y):
@@ -27,18 +32,32 @@ def regularize(SW, gamma):
     return SW + lam * np.eye(p)
 
 
-def fisher_direction(X, y, gamma=0.0):
-    """Dos clases: resuelve (S_W + lam I) w = mu1 - mu2 (sin invertir). w normalizado a norma 1."""
+def fisher_direction(X, y, gamma=0.0, method="solve"):
+    """Dos clases: dirección de Fisher normalizada a norma 1.
+
+    method="solve": resuelve (S_W + lam I) w = mu1 - mu2 sin invertir la matriz.
+                    Avisa si la matriz es numéricamente singular.
+    method="pinv":  w = (S_W + lam I)^+ (mu1 - mu2), con la pseudoinversa.
+                    Con S_W singular no maximiza el criterio original; se usa solo para comparar.
+    """
     classes, mus, Ss, _ = class_stats(X, y)
-    assert len(classes) == 2
+    if len(classes) != 2:
+        raise ValueError("fisher_direction necesita exactamente dos clases")
+    d = mus[0] - mus[1]
+    if np.linalg.norm(d) <= 1e-12 * max(1.0, np.abs(mus).max()):
+        raise ValueError("las medias de las clases coinciden: no hay dirección discriminante")
     SW = sum(Ss)
     if gamma > 0:
         SW = regularize(SW, gamma)
-    d = mus[0] - mus[1]
-    try:
-        w = np.linalg.solve(SW, d)
-    except np.linalg.LinAlgError:
+    if method == "pinv":
         w = np.linalg.pinv(SW) @ d
+    elif method == "solve":
+        if np.linalg.cond(SW) > COND_MAX:
+            warnings.warn("S_W es numéricamente singular; el resultado de solve es inestable "
+                          "(use gamma > 0)", RuntimeWarning, stacklevel=2)
+        w = np.linalg.solve(SW, d)
+    else:
+        raise ValueError("method debe ser 'solve' o 'pinv'")
     return w / np.linalg.norm(w)
 
 
@@ -47,18 +66,22 @@ def fisher_J(w, X, y):
     _, mus, Ss, _ = class_stats(X, y)
     SW = sum(Ss)
     d = mus[0] - mus[1]
-    return float((w @ d) ** 2 / (w @ SW @ w))
+    den = w @ SW @ w
+    if den <= 0:
+        raise ValueError("w^T S_W w = 0: el cociente de Fisher no está definido en esa dirección")
+    return float((w @ d) ** 2 / den)
 
 
 class FisherLDA:
     """Clasificador de 2 clases: proyecta y umbral en el punto medio de medias proyectadas."""
 
-    def __init__(self, gamma=0.0):
+    def __init__(self, gamma=0.0, method="solve"):
         self.gamma = gamma
+        self.method = method
 
     def fit(self, X, y):
         self.classes_, mus, _, _ = class_stats(X, y)
-        self.w_ = fisher_direction(X, y, self.gamma)
+        self.w_ = fisher_direction(X, y, self.gamma, self.method)
         m1, m2 = self.w_ @ mus[0], self.w_ @ mus[1]
         self.t_ = (m1 + m2) / 2
         self.sign_ = 1 if m1 < m2 else -1  # orientación: clase 1 a un lado
