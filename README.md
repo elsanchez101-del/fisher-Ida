@@ -54,14 +54,24 @@ $\{5, 9, 10\}$ y $\{19, 23, 24\}$, umbral 15 y $J = 7$.
 
 Fisher fue mejor en las 10 repeticiones, y su dirección coincide con la de scikit-learn (diferencia del orden de $10^{-16}$).
 
-**Pocos datos** (30 datos y 40 variables, $S_W$ singular): sin regularizar la exactitud es 0.513;
-con $\gamma = 3$ llega a 0.626, y con $\gamma$ elegido por validación cruzada dentro del entrenamiento, 0.601.
+**Pocos datos** (30 datos y 40 variables, $S_W$ singular):
+
+| Método | Exactitud en prueba |
+|---|---|
+| Sin regularizar ($\gamma = 0$) | 0.513 ± 0.035 |
+| Pseudoinversa | 0.562 ± 0.027 |
+| Regularizado, $\gamma$ elegido por validación cruzada | 0.619 ± 0.020 |
+| Regularizado, mejor $\gamma$ de la rejilla ($\gamma = 10$) | 0.630 ± 0.010 |
+| Diferencia de medias | 0.628 ± 0.010 |
+
+Con $\gamma$ grande, $w$ tiende a la diferencia de medias, como predice la teoría.
 
 ## Organización de archivos
 
 ```
 src/fisher.py            implementación: medias, S_W, dirección w, criterio J, clasificador, multiclase y regularización
-tests/test_fisher.py     8 pruebas: ejemplo a mano, invarianza, máximo de J, comparación con sklearn, rango de S_B, S_W singular
+tests/test_fisher.py     13 pruebas: ejemplo a mano, invarianzas, máximo de J, comparación con sklearn, rango de S_B,
+                         S_W singular, medias iguales, gamma grande e intercambio de etiquetas
 experiments/run_all.py   genera todos los experimentos, tablas y figuras
 results/                 tablas (csv) y resumen de resultados (json)
 figures/                 gráficos usados en el documento y el video
@@ -74,7 +84,7 @@ Se necesita Python 3 (lo probamos con Python 3.13).
 
 ```bash
 pip install -r requirements.txt
-python -m pytest -q tests          # corre las 8 pruebas
+python -m pytest -q tests          # corre las 13 pruebas
 python experiments/run_all.py      # vuelve a generar results/ y figures/
 ```
 
