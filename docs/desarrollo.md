@@ -1,15 +1,30 @@
 ---
 title: "Discriminante lineal de Fisher: desarrollo matemático y resultados preliminares"
-subtitle: "Álgebra Lineal Aplicada — Entrega parcial del proyecto
+subtitle: "Álgebra Lineal Aplicada — Entrega parcial del proyecto"
 author: "Elison Sanchez, Rodolfo Brandariz, Marcelo Bravo y Marcelo Torres"
 date: "Noviembre 2026"
 geometry: margin=2.3cm
-fontsize: 11pt
+fontsize: 12pt
+mainfont: Arial
+header-includes:
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
 ---
 
 # 1. Problema
 
 Tenemos observaciones $x_i\in\mathbb R^p$ con etiqueta de clase. Queremos una dirección $w\in\mathbb R^p$ tal que, al proyectar $y=w^\top x$, las dos clases queden **lo más separadas posible** y cada clase **lo más compacta posible**. Solo importa la dirección de $w$.
+
+**Objetivo.** Implementar el discriminante de Fisher para dos clases y comprobar que:
+
+1. reproduce el ejemplo a mano ($w\propto(4,1)$, umbral 15, $J=7$);
+2. su dirección coincide con la de `LinearDiscriminantAnalysis` de scikit-learn;
+3. con datos gaussianos correlacionados, tiene mayor exactitud en prueba que la diferencia de medias y que la primera componente principal, en promedio sobre 10 repeticiones;
+4. cuando $S_W$ es singular ($N<p$), regularizar con $S_W+\lambda I$ mejora la exactitud en prueba frente a no regularizar, eligiendo $\lambda$ solo con datos de entrenamiento.
+
+Cada punto se revisa con las pruebas de `tests/` o con las tablas que genera `experiments/run_all.py`.
+
+**Alcance.** Trabajamos el caso de dos clases completo (teoría, código y experimentos). El caso de varias clases se ve en la teoría y en una prueba de rango. Los datos son sintéticos, gaussianos y con la misma covarianza en ambas clases. No incluimos datos reales, covarianzas distintas (QDA) ni clases que no se puedan separar con una recta.
 
 Notación para dos clases $\mathcal C_1,\mathcal C_2$: medias $\mu_k$, dispersiones $S_k=\sum_{x\in\mathcal C_k}(x-\mu_k)(x-\mu_k)^\top$, y dispersión intraclase $S_W=S_1+S_2$. Sea $d=\mu_1-\mu_2$.
 
@@ -17,7 +32,7 @@ Notación para dos clases $\mathcal C_1,\mathcal C_2$: medias $\mu_k$, dispersio
 
 # 2. Criterio de Fisher
 
-Como $w^\top S_Ww=\sum_k\sum_{x\in\mathcal C_k}(w^\top x-w^\top\mu_k)^2$, el denominador es la dispersión intraclase proyectada. Definimos
+Como $w^\top S_Ww=\sum_k\sum_{x\in\mathcal C_k}(w^\top x-w^\top\mu_k)^2$, el denominador es la dispersión intraclase proyectada. Siguiendo a Fisher [1] (ver también [3], [5]), definimos
 $$J(w)=\frac{(w^\top(\mu_1-\mu_2))^2}{w^\top S_Ww},\qquad w\neq 0 .$$
 
 **Propiedades.** (i) $J(cw)=J(w)$ para $c\ne0$: solo cuenta la dirección; en particular $w$ y $-w$ son equivalentes. (ii) $S_W$ es simétrica y semidefinida positiva, pues $w^\top S_Ww$ es una suma de cuadrados $\ge 0$. Supondremos $S_W\succ0$ (se relaja en la sección 6).
@@ -39,7 +54,7 @@ Como $(w^\top d)^2=w^\top S_Bw$ con $S_B=dd^\top$ (rango $\le1$),
 $$J(w)=\frac{w^\top S_Bw}{w^\top S_Ww},\qquad S_Bw=\lambda S_Ww ,$$
 un cociente de Rayleigh *generalizado*. Con $S_W\succ0$, el problema equivale a los autovalores de la matriz simétrica $S_W^{-1/2}S_BS_W^{-1/2}$ (similar a $S_W^{-1}S_B$), y $J$ máximo es el mayor autovalor $\lambda_{\max}$. Aquí $\lambda_{\max}=d^\top S_W^{-1}d$, lo que coincide con el teorema.
 
-Para $K$ clases, con $n_k$, $\mu_k$, media global $\mu$ y $S_B=\sum_k n_k(\mu_k-\mu)(\mu_k-\mu)^\top$, las direcciones son los autovectores generalizados de mayores autovalores. Como $\sum_k n_k(\mu_k-\mu)=0$, $\operatorname{rango}(S_B)\le K-1$; hay a lo sumo $\min\{p,K-1\}$ direcciones útiles (verificado en `test_rank_SB_multiclass`).
+Para $K$ clases, con $n_k$, $\mu_k$, media global $\mu$ y $S_B=\sum_k n_k(\mu_k-\mu)(\mu_k-\mu)^\top$, las direcciones son los autovectores generalizados de mayores autovalores [2], [5]. Como $\sum_k n_k(\mu_k-\mu)=0$, $\operatorname{rango}(S_B)\le K-1$; hay a lo sumo $\min\{p,K-1\}$ direcciones útiles (verificado en `test_rank_SB_multiclass`).
 
 # 5. Ejemplo calculable a mano
 
@@ -61,13 +76,13 @@ Regla: $4x_1+x_2<15\Rightarrow\mathcal C_1$. Además $J_{\max}=d^\top S_W^{-1}d=
 
 $S_W$ tiene rango a lo sumo $\min(p,N-K)$; es singular si $N-K<p$ o hay variables redundantes. Si $d=d_R+d_0$ con $d_R\in\operatorname{im}S_W$, $d_0\in\ker S_W$ y $d_0\ne0$, el cociente no tiene máximo finito (direcciones con dispersión intraclase cero pero separación positiva). Se regulariza:
 $$S_{W,\lambda}=S_W+\lambda I,\quad w_\lambda=(S_W+\lambda I)^{-1}d,\quad \lambda=\gamma\,\operatorname{tr}(S_W)/p .$$
-Esto maximiza el criterio *modificado*. Para $\lambda$ grande, $w_\lambda$ se aproxima a $d$ (el caso $\sigma^2 I$). Elegimos $\gamma$ solo con validación dentro del entrenamiento.
+Esto maximiza el criterio *modificado* [5]. Para $\lambda$ grande, $w_\lambda$ se aproxima a $d$ (el caso $\sigma^2 I$). Elegimos $\gamma$ solo con validación dentro del entrenamiento.
 
 # 7. Resultados preliminares
 
 Todo es reproducible con `python experiments/run_all.py` (semillas $2026+k$, $k=0,\dots,9$).
 
-**Experimento A: gaussianas correlacionadas.** $\mu_1=(0,0)$, $\mu_2=(1,0)$, $\Sigma=\begin{pmatrix}4&1.8\\1.8&1\end{pmatrix}$ (definida positiva: $\det=0.76$).. 150 puntos por clase; división 50 % entrenamiento / 50 % prueba hecha antes del ajuste. Misma regla de umbral (punto medio de medias proyectadas de entrenamiento) para las tres direcciones. $J$ se informa con $S_W$ reemplazada por $\hat\Sigma=S_W/(N-2)$ (así no depende de $N$); el valor poblacional máximo es $\Delta^\top\Sigma^{-1}\Delta=1/0.76\approx1.32$.
+**Experimento A: gaussianas correlacionadas.** $\mu_1=(0,0)$, $\mu_2=(1,0)$, $\Sigma=\begin{pmatrix}4&1.8\\1.8&1\end{pmatrix}$ (definida positiva: $\det=0.76$). 150 puntos por clase; división 50 % entrenamiento / 50 % prueba hecha antes del ajuste. Misma regla de umbral (punto medio de medias proyectadas de entrenamiento) para las tres direcciones. $J$ se informa con $S_W$ reemplazada por $\hat\Sigma=S_W/(N-2)$ (así no depende de $N$); el valor poblacional máximo es $\Delta^\top\Sigma^{-1}\Delta=1/0.76\approx1.32$.
 
 | Método | $J$ (train) | Exactitud (prueba) | Ángulo con Fisher |
 |---|---|---|---|
@@ -75,7 +90,7 @@ Todo es reproducible con `python experiments/run_all.py` (semillas $2026+k$, $k=
 | **Fisher** | **1.19 ± 0.21** | **0.695 ± 0.032** | 0° |
 | PCA (PC1) | 0.20 ± 0.12 | 0.559 ± 0.038 | 83.9° ± 2.8° |
 
-(media ± desv. estándar en 10 repeticiones). Fisher gana en las 10 repeticiones de este escenario. La PC1 apunta a la dirección de máxima varianza (la diagonal de la nube), irrelevante para separar. La dirección de Fisher coincide con `LinearDiscriminantAnalysis(solver="lsqr")` de scikit-learn (diferencia $\sim10^{-16}$). Matriz de confusión (repetición 0, fila = real): Fisher $\begin{pmatrix}52&20\\20&58\end{pmatrix}$, diferencia de medias $\begin{pmatrix}44&28\\32&46\end{pmatrix}$, PC1 $\begin{pmatrix}44&28\\35&43\end{pmatrix}$.
+(media ± desv. estándar en 10 repeticiones). Fisher gana en las 10 repeticiones de este escenario. La PC1 apunta a la dirección de máxima varianza (la diagonal de la nube), irrelevante para separar. La dirección de Fisher coincide con `LinearDiscriminantAnalysis` de scikit-learn [4], con `solver="lsqr"` (diferencia $\sim10^{-16}$). Matriz de confusión (repetición 0, fila = real): Fisher $\begin{pmatrix}52&20\\20&58\end{pmatrix}$, diferencia de medias $\begin{pmatrix}44&28\\32&46\end{pmatrix}$, PC1 $\begin{pmatrix}44&28\\35&43\end{pmatrix}$.
 
 ![Direcciones y frontera (repetición 0)](../figures/gauss_direcciones.png){width=60%}
 
@@ -100,7 +115,7 @@ Sin regularización ($\gamma=0$) el sistema es numéricamente inestable y el res
 
 # 9. Relación con LDA probabilístico
 
-Si $X\mid Y=k\sim\mathcal N(\mu_k,\Sigma)$ con priors $\pi_k$, la regla de Bayes maximiza $\delta_k(x)=x^\top\Sigma^{-1}\mu_k-\tfrac12\mu_k^\top\Sigma^{-1}\mu_k+\log\pi_k$, afín en $x$: fronteras lineales. Para dos clases la normal es $\Sigma^{-1}(\mu_1-\mu_2)$, la misma dirección de Fisher al estimar $\Sigma$ con la covarianza agrupada. Dos motivaciones, una misma dirección.
+Si $X\mid Y=k\sim\mathcal N(\mu_k,\Sigma)$ con priors $\pi_k$, la regla de Bayes maximiza $\delta_k(x)=x^\top\Sigma^{-1}\mu_k-\tfrac12\mu_k^\top\Sigma^{-1}\mu_k+\log\pi_k$, afín en $x$: fronteras lineales. Para dos clases la normal es $\Sigma^{-1}(\mu_1-\mu_2)$, la misma dirección de Fisher al estimar $\Sigma$ con la covarianza agrupada. Dos motivaciones, una misma dirección [2], [3].
 
 # 10. Organización del equipo y contribuciones
 
@@ -127,8 +142,12 @@ El proyecto se desarrolla de manera colaborativa. Las responsabilidades iniciale
 
 # Referencias
 
-1. R. A. Fisher (1936), *The Use of Multiple Measurements in Taxonomic Problems*, Annals of Eugenics 7(2).
-2. T. Hastie, R. Tibshirani, J. Friedman (2009), *The Elements of Statistical Learning*, cap. 4.
-3. C. Bishop (2006), *Pattern Recognition and Machine Learning*, sec. 4.1.4.
-4. scikit-learn, *Linear and Quadratic Discriminant Analysis*.
-5. Material del curso: «Separación de clases con el discriminante de Fisher».
+[1] R. A. Fisher, "The use of multiple measurements in taxonomic problems," *Annals of Eugenics*, vol. 7, no. 2, pp. 179–188, 1936, doi: 10.1111/j.1469-1809.1936.tb02137.x.
+
+[2] T. Hastie, R. Tibshirani y J. Friedman, *The Elements of Statistical Learning: Data Mining, Inference, and Prediction*, 2nd ed. New York, NY, USA: Springer, 2009, ch. 4.
+
+[3] C. M. Bishop, *Pattern Recognition and Machine Learning*. New York, NY, USA: Springer, 2006, sec. 4.1.4.
+
+[4] scikit-learn developers, "Linear and Quadratic Discriminant Analysis," *scikit-learn documentation*. [En línea]. Disponible: https://scikit-learn.org/stable/modules/lda_qda.html. [Accedido: 2 nov. 2026].
+
+[5] O. Velásquez Castañón, "Separación de clases con el discriminante de Fisher: proyecciones, cocientes de Rayleigh y clasificación," material de referencia, Álgebra Lineal Aplicada 2026-2, Universidad del Pacífico, Lima, Perú, oct. 2026.
