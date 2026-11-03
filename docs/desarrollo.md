@@ -1,6 +1,6 @@
 ---
 title: "Discriminante lineal de Fisher: desarrollo matemático y resultados preliminares"
-subtitle: "Álgebra Lineal Aplicada — Entrega parcial del proyecto"
+subtitle: "Elison Sanchez, Rodolfo Brandariz, Marcelo Bravo y Marcelo Torres"
 author: "Integrantes: (completar)"
 date: "Noviembre 2026"
 geometry: margin=2.3cm
@@ -67,7 +67,7 @@ Esto maximiza el criterio *modificado*. Para $\lambda$ grande, $w_\lambda$ se ap
 
 Todo es reproducible con `python experiments/run_all.py` (semillas $2026+k$, $k=0,\dots,9$).
 
-**Experimento A: gaussianas correlacionadas.** $\mu_1=(0,0)$, $\mu_2=(1,0)$, $\Sigma=\begin{pmatrix}4&1.8\\1.8&1\end{pmatrix}$ (definida positiva: $\det=2.76$). 150 puntos por clase; división 50 % entrenamiento / 50 % prueba hecha antes del ajuste. Misma regla de umbral (punto medio de medias proyectadas de entrenamiento) para las tres direcciones. $J$ se informa con $S_W$ reemplazada por $\hat\Sigma=S_W/(N-2)$ (así no depende de $N$); el valor poblacional máximo es $\Delta^\top\Sigma^{-1}\Delta=1/0.76\approx1.32$.
+**Experimento A: gaussianas correlacionadas.** $\mu_1=(0,0)$, $\mu_2=(1,0)$, $\Sigma=\begin{pmatrix}4&1.8\\1.8&1\end{pmatrix}$ (definida positiva: $\det=0.76$).. 150 puntos por clase; división 50 % entrenamiento / 50 % prueba hecha antes del ajuste. Misma regla de umbral (punto medio de medias proyectadas de entrenamiento) para las tres direcciones. $J$ se informa con $S_W$ reemplazada por $\hat\Sigma=S_W/(N-2)$ (así no depende de $N$); el valor poblacional máximo es $\Delta^\top\Sigma^{-1}\Delta=1/0.76\approx1.32$.
 
 | Método | $J$ (train) | Exactitud (prueba) | Ángulo con Fisher |
 |---|---|---|---|
@@ -101,6 +101,29 @@ Sin regularización ($\gamma=0$) el sistema es numéricamente inestable y el res
 # 9. Relación con LDA probabilístico
 
 Si $X\mid Y=k\sim\mathcal N(\mu_k,\Sigma)$ con priors $\pi_k$, la regla de Bayes maximiza $\delta_k(x)=x^\top\Sigma^{-1}\mu_k-\tfrac12\mu_k^\top\Sigma^{-1}\mu_k+\log\pi_k$, afín en $x$: fronteras lineales. Para dos clases la normal es $\Sigma^{-1}(\mu_1-\mu_2)$, la misma dirección de Fisher al estimar $\Sigma$ con la covarianza agrupada. Dos motivaciones, una misma dirección.
+
+# 10. Organización del equipo y contribuciones
+
+El proyecto se desarrolla de manera colaborativa. Las responsabilidades iniciales se distribuyen de la siguiente manera:
+
+| Integrante | Responsabilidad principal | Actividades |
+|---|---|---|
+| Elison Sanchez | Fundamentos matemáticos | Formulación del criterio de Fisher, demostración matemática y revisión de la notación. |
+| Rodolfo Brandariz | Desarrollo matemático aplicado | Resolución del ejemplo manual, cálculo de matrices de dispersión y explicación de las proyecciones. |
+| Marcelo Bravo | Implementación computacional | Desarrollo y revisión del código Python, implementación del algoritmo y comparación con PCA. |
+| Marcelo Torres | Experimentación y documentación | Experimentos de regularización, análisis de resultados, gráficos y documentación del repositorio. |
+
+# 11. Cronograma de actividades pendientes
+
+| Etapa | Actividad | Resultado esperado |
+|---|---|---|
+| 1 | Revisión y corrección matemática | Desarrollo matemático validado. |
+| 2 | Revisión de la implementación | Código probado y reproducible. |
+| 3 | Ampliación de experimentos | Comparaciones y resultados adicionales. |
+| 4 | Interpretación de resultados | Análisis de gráficos y métricas. |
+| 5 | Integración documental | Documento, referencias y README completos. |
+| 6 | Preparación audiovisual | Guion y video con participación de los cuatro integrantes. |
+| 7 | Verificación final | Repositorio organizado y versión identificada. |
 
 # Referencias
 
