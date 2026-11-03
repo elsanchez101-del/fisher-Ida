@@ -139,7 +139,7 @@ El proyecto se desarrolla de manera colaborativa. Las responsabilidades iniciale
 | Revisión y corrección matemática | Elison Sanchez y Rodolfo Brandariz | 2/11/2026 | En revisión |
 | Verificación de la implementación y pruebas | Marcelo Bravo | 2/11/2026 | En revisión |
 | Actualización de experimentos y resultados | Marcelo Bravo y Marcelo Torres | 2/11/2026 | En revisión |
-| Interpretación y discusión de resultados | Todos los integrantes | 6/11/2026 | Pendiente |
+| Interpretación y discusión de resultados | Todos los integrantes | 2/11/2026 | En revisión |
 | Actualización de documentos y referencias | Rodolfo Brandariz y Marcelo Torres | 7/11/2026 | En revisión |
 | Preparación y grabación del video | Todos los integrantes | 7/11/2026 | Pendiente |
 | Verificación final del repositorio y entrega | Todos los integrantes | 9/11/2026 | Pendiente |
