@@ -13,29 +13,22 @@ header-includes:
 
 # 1. Problema
 
-Tenemos observaciones $x_i\in\mathbb R^p$ con etiqueta de clase. Queremos una dirección $w\in\mathbb R^p$ tal que, al proyectar $y=w^\top x$, las dos clases queden **lo más separadas posible** y cada clase **lo más compacta posible**. Solo importa la dirección de $w$.
+Tenemos datos $x_i\in\mathbb R^p$ y sabemos a cuál de dos clases pertenece cada uno. La idea es reemplazar cada dato por un solo número, $y=w^\top x$, eligiendo $w$ de manera que en esa recta las dos clases queden separadas y, a la vez, cada clase quede lo más agrupada posible. Como veremos, lo único que importa es la dirección de $w$, no su tamaño.
 
-**Objetivo.** Implementar el discriminante de Fisher para dos clases y comprobar que:
+**Objetivo.** Nuestro objetivo es programar el discriminante de Fisher para dos clases y comprobar cuatro cosas concretas. Primero, que el código da los mismos valores que el ejemplo hecho a mano ($w\propto(4,1)$, umbral 15 y $J=7$). Segundo, que la dirección que obtenemos es la misma que la de `LinearDiscriminantAnalysis` de scikit-learn. Tercero, que con datos gaussianos correlacionados Fisher acierta más en el conjunto de prueba que la diferencia de medias y que PCA, en promedio sobre 10 repeticiones. Y cuarto, que cuando $S_W$ es singular (más variables que datos) regularizar con $S_W+\lambda I$ mejora el resultado, siempre que $\lambda$ se elija mirando solo el entrenamiento. Todo esto se puede revisar con las pruebas de la carpeta `tests/` y con las tablas que genera `experiments/run_all.py`.
 
-1. reproduce el ejemplo a mano ($w\propto(4,1)$, umbral 15, $J=7$);
-2. su dirección coincide con la de `LinearDiscriminantAnalysis` de scikit-learn;
-3. con datos gaussianos correlacionados, tiene mayor exactitud en prueba que la diferencia de medias y que la primera componente principal, en promedio sobre 10 repeticiones;
-4. cuando $S_W$ es singular ($N<p$), regularizar con $S_W+\lambda I$ mejora la exactitud en prueba frente a no regularizar, eligiendo $\lambda$ solo con datos de entrenamiento.
-
-Cada punto se revisa con las pruebas de `tests/` o con las tablas que genera `experiments/run_all.py`.
-
-**Alcance.** Trabajamos el caso de dos clases completo (teoría, código y experimentos). El caso de varias clases se ve en la teoría y en una prueba de rango. Los datos son sintéticos, gaussianos y con la misma covarianza en ambas clases. No incluimos datos reales, covarianzas distintas (QDA) ni clases que no se puedan separar con una recta.
+**Alcance.** Hicimos completo el caso de dos clases: la teoría, el código y los experimentos. El caso de más clases solo lo vemos en la teoría y en una prueba sobre el rango de $S_B$. Todos los datos son sintéticos, gaussianos y con la misma covarianza en las dos clases; no trabajamos con datos reales, con covarianzas distintas (eso llevaría a QDA) ni con clases que no se puedan separar con una recta.
 
 Notación para dos clases $\mathcal C_1,\mathcal C_2$: medias $\mu_k$, dispersiones $S_k=\sum_{x\in\mathcal C_k}(x-\mu_k)(x-\mu_k)^\top$, y dispersión intraclase $S_W=S_1+S_2$. Sea $d=\mu_1-\mu_2$.
 
-**Por qué no basta la distancia entre medias.** Maximizar $(w^\top d)^2$ no tiene máximo (basta escalar $w$) y, aun normalizando $\|w\|=1$, la solución $w\propto d$ ignora la forma de las nubes: si hay correlación, proyectar sobre $d$ puede mezclar las clases.
+**Por qué no basta la distancia entre medias.** Lo primero que se nos ocurre es buscar el $w$ que aleje más las medias proyectadas, es decir, maximizar $(w^\top d)^2$. El problema es que eso no tiene máximo: si duplicamos $w$, el valor se multiplica por cuatro. Podríamos fijar $\|w\|=1$, y entonces la respuesta sería $w\propto d$, pero esa dirección no toma en cuenta la forma de las nubes de puntos. Cuando las variables están correlacionadas, proyectar sobre $d$ puede hacer que las dos clases se encimen.
 
 # 2. Criterio de Fisher
 
 Como $w^\top S_Ww=\sum_k\sum_{x\in\mathcal C_k}(w^\top x-w^\top\mu_k)^2$, el denominador es la dispersión intraclase proyectada. Siguiendo a Fisher [1] (ver también [3], [5]), definimos
 $$J(w)=\frac{(w^\top(\mu_1-\mu_2))^2}{w^\top S_Ww},\qquad w\neq 0 .$$
 
-**Propiedades.** (i) $J(cw)=J(w)$ para $c\ne0$: solo cuenta la dirección; en particular $w$ y $-w$ son equivalentes. (ii) $S_W$ es simétrica y semidefinida positiva, pues $w^\top S_Ww$ es una suma de cuadrados $\ge 0$. Supondremos $S_W\succ0$ (se relaja en la sección 6).
+**Propiedades.** Hay dos cosas que conviene notar. La primera es que si multiplicamos $w$ por cualquier $c\ne0$, el numerador y el denominador se multiplican por $c^2$, así que $J(cw)=J(w)$: solo importa la dirección, y por eso $w$ y $-w$ dan lo mismo. La segunda es que $S_W$ es simétrica y semidefinida positiva, porque $w^\top S_Ww$ es una suma de cuadrados y nunca es negativa. Por ahora vamos a suponer que $S_W$ es definida positiva (invertible); en la sección 6 vemos qué pasa cuando no lo es.
 
 # 3. Teorema y demostración
 
@@ -52,7 +45,7 @@ Por Cauchy–Schwarz, $(v^\top a)^2\le\|v\|^2\|a\|^2$, con igualdad si y solo si
 
 Como $(w^\top d)^2=w^\top S_Bw$ con $S_B=dd^\top$ (rango $\le1$),
 $$J(w)=\frac{w^\top S_Bw}{w^\top S_Ww},\qquad S_Bw=\lambda S_Ww ,$$
-un cociente de Rayleigh *generalizado*. Con $S_W\succ0$, el problema equivale a los autovalores de la matriz simétrica $S_W^{-1/2}S_BS_W^{-1/2}$ (similar a $S_W^{-1}S_B$), y $J$ máximo es el mayor autovalor $\lambda_{\max}$. Aquí $\lambda_{\max}=d^\top S_W^{-1}d$, lo que coincide con el teorema.
+Esto es un cociente de Rayleigh *generalizado*. Si $S_W$ es invertible, podemos hacer el mismo cambio de la demostración, $v=S_W^{1/2}w$, y el problema pasa a ser encontrar los autovalores de la matriz simétrica $S_W^{-1/2}S_BS_W^{-1/2}$. Esta matriz tiene los mismos autovalores que $S_W^{-1}S_B$, porque son semejantes. El valor máximo de $J$ es entonces el autovalor más grande, y en el caso de dos clases ese autovalor es $d^\top S_W^{-1}d$, que es justo lo que obtuvimos en el teorema.
 
 Para $K$ clases, con $n_k$, $\mu_k$, media global $\mu$ y $S_B=\sum_k n_k(\mu_k-\mu)(\mu_k-\mu)^\top$, las direcciones son los autovectores generalizados de mayores autovalores [2], [5]. Como $\sum_k n_k(\mu_k-\mu)=0$, $\operatorname{rango}(S_B)\le K-1$; hay a lo sumo $\min\{p,K-1\}$ direcciones útiles (verificado en `test_rank_SB_multiclass`).
 
@@ -76,13 +69,13 @@ Regla: $4x_1+x_2<15\Rightarrow\mathcal C_1$. Además $J_{\max}=d^\top S_W^{-1}d=
 
 $S_W$ tiene rango a lo sumo $\min(p,N-K)$; es singular si $N-K<p$ o hay variables redundantes. Si $d=d_R+d_0$ con $d_R\in\operatorname{im}S_W$, $d_0\in\ker S_W$ y $d_0\ne0$, el cociente no tiene máximo finito (direcciones con dispersión intraclase cero pero separación positiva). Se regulariza:
 $$S_{W,\lambda}=S_W+\lambda I,\quad w_\lambda=(S_W+\lambda I)^{-1}d,\quad \lambda=\gamma\,\operatorname{tr}(S_W)/p .$$
-Esto maximiza el criterio *modificado* [5]. Para $\lambda$ grande, $w_\lambda$ se aproxima a $d$ (el caso $\sigma^2 I$). Elegimos $\gamma$ solo con validación dentro del entrenamiento.
+Hay que tener claro que así ya no se maximiza el criterio original, sino uno modificado [5]. Cuando $\lambda$ es muy grande, el término $\lambda I$ domina sobre $S_W$ y $w_\lambda$ apunta casi en la dirección de $d$, como en el caso $S_W=\sigma^2 I$. El valor de $\gamma$ lo elegimos solo con validación dentro del entrenamiento.
 
 # 7. Resultados preliminares
 
 Todo es reproducible con `python experiments/run_all.py` (semillas $2026+k$, $k=0,\dots,9$).
 
-**Experimento A: gaussianas correlacionadas.** $\mu_1=(0,0)$, $\mu_2=(1,0)$, $\Sigma=\begin{pmatrix}4&1.8\\1.8&1\end{pmatrix}$ (definida positiva: $\det=0.76$). 150 puntos por clase; división 50 % entrenamiento / 50 % prueba hecha antes del ajuste. Misma regla de umbral (punto medio de medias proyectadas de entrenamiento) para las tres direcciones. $J$ se informa con $S_W$ reemplazada por $\hat\Sigma=S_W/(N-2)$ (así no depende de $N$); el valor poblacional máximo es $\Delta^\top\Sigma^{-1}\Delta=1/0.76\approx1.32$.
+**Experimento A: gaussianas correlacionadas.** $\mu_1=(0,0)$, $\mu_2=(1,0)$, $\Sigma=\begin{pmatrix}4&1.8\\1.8&1\end{pmatrix}$ (definida positiva: $\det=0.76$). 150 puntos por clase; división 50 % entrenamiento / 50 % prueba hecha antes del ajuste. Misma regla de umbral (punto medio de medias proyectadas de entrenamiento) para las tres direcciones. Para reportar $J$ usamos $\hat\Sigma=S_W/(N-2)$ en lugar de $S_W$. La razón es que $S_W$ es una suma sobre todos los puntos y crece con $N$, mientras que $\hat\Sigma$ es la covarianza agrupada y no depende del tamaño de la muestra; así el valor se puede comparar con el teórico. Con $\Delta=\mu_1-\mu_2=(-1,0)$, el máximo teórico es $\Delta^\top\Sigma^{-1}\Delta=1/0.76\approx1.32$.
 
 | Método | $J$ (train) | Exactitud (prueba) | Ángulo con Fisher |
 |---|---|---|---|
@@ -120,11 +113,11 @@ Como referencia, en las mismas 10 repeticiones medimos también:
 | Diferencia de medias, $w\propto d$ | 0.628 | 0.010 |
 | $\gamma$ elegido por validación cruzada | 0.619 | 0.020 |
 
-Sin regularización ($\gamma=0$), el sistema es numéricamente inestable y la exactitud media es 0.513, cercana al azar. El código ahora avisa cuando $S_W$ es numéricamente singular (número de condición mayor que $10^{12}$). Con la pseudoinversa la exactitud sube a 0.562, pero, como señala [5], esto no resuelve el criterio original cuando $S_W$ es singular: solo elige una de las muchas direcciones posibles, por eso la usamos únicamente para comparar.
+Sin regularizar ($\gamma=0$), el sistema es numéricamente inestable y la exactitud media es 0.513, prácticamente al azar. Por eso agregamos al código un aviso que salta cuando el número de condición de $S_W$ pasa de $10^{12}$. Con la pseudoinversa la exactitud sube a 0.562. Sin embargo, el material del curso [5] advierte que la pseudoinversa no resuelve el criterio original cuando $S_W$ es singular, porque solo escoge una de muchas direcciones posibles; por eso la incluimos únicamente como comparación.
 
-Al aumentar $\gamma$, la exactitud media crece hasta 0.630 y luego se estabiliza. Esto coincide con la teoría de la sección 6: cuando $\lambda\to\infty$, $w_\lambda$ tiende a la dirección de $d$, y de hecho los valores grandes de $\gamma$ quedan prácticamente iguales a la diferencia de medias (0.628). Con tan pocos datos, $S_W$ se estima mal y lo mejor es apoyarse casi solo en las medias. Estos valores de prueba son descriptivos y no se usan para elegir el parámetro.
+A medida que aumenta $\gamma$, la exactitud sube hasta 0.630 y después se queda casi igual. Esto era de esperar por lo que vimos en la sección 6: con $\lambda$ grande, $w_\lambda$ se acerca a la dirección de $d$, y efectivamente los valores grandes de $\gamma$ dan casi lo mismo que la diferencia de medias (0.628). Nuestra interpretación es que con solo 30 datos $S_W$ queda muy mal estimada, y conviene apoyarse casi solo en las medias. Ojo: estos valores son de prueba y los mostramos solo para describir el comportamiento; no los usamos para elegir $\gamma$.
 
-El parámetro $\gamma$ elegido por validación cruzada de cinco pliegues, hecha solo con el entrenamiento, alcanza una exactitud media de 0.619 (desviación estándar 0.020) en prueba. Los valores elegidos variaron entre repeticiones ($10^{-4}$, 0.3, 1, 3, 10, 30, 100), lo que muestra que la selección es sensible al tamaño reducido de la muestra.
+Cuando elegimos $\gamma$ con validación cruzada de cinco pliegues, usando solo el entrenamiento, la exactitud media en prueba es 0.619 (desviación estándar 0.020). El $\gamma$ elegido cambió bastante de una repetición a otra (desde $10^{-4}$ hasta 100), lo cual tiene sentido: con tan pocos datos, cada pliegue de validación tiene apenas unos 6 puntos y la estimación es ruidosa.
 
 ![Regularización, pseudoinversa y diferencia de medias](../figures/regularizacion.png){width=60%}
 
@@ -136,7 +129,7 @@ El parámetro $\gamma$ elegido por validación cruzada de cinco pliegues, hecha 
 
 # 9. Relación con LDA probabilístico
 
-Si $X\mid Y=k\sim\mathcal N(\mu_k,\Sigma)$ con priors $\pi_k$, la regla de Bayes maximiza $\delta_k(x)=x^\top\Sigma^{-1}\mu_k-\tfrac12\mu_k^\top\Sigma^{-1}\mu_k+\log\pi_k$, afín en $x$: fronteras lineales. Para dos clases la normal es $\Sigma^{-1}(\mu_1-\mu_2)$, la misma dirección de Fisher al estimar $\Sigma$ con la covarianza agrupada. Dos motivaciones, una misma dirección [2], [3].
+Si $X\mid Y=k\sim\mathcal N(\mu_k,\Sigma)$ con priors $\pi_k$, la regla de Bayes maximiza $\delta_k(x)=x^\top\Sigma^{-1}\mu_k-\tfrac12\mu_k^\top\Sigma^{-1}\mu_k+\log\pi_k$, Esta función es afín en $x$, así que las fronteras entre clases son rectas (o hiperplanos). Para dos clases, el vector normal a la frontera es $\Sigma^{-1}(\mu_1-\mu_2)$. Si estimamos $\Sigma$ con la covarianza agrupada, que es proporcional a $S_W$, obtenemos la misma dirección que con el criterio de Fisher. Es decir, partiendo de una idea geométrica (Fisher) y de una probabilística (Bayes) se llega al mismo resultado [2], [3].
 
 # 10. Organización del equipo y contribuciones
 
