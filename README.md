@@ -24,7 +24,8 @@ experimentos con datos sintéticos.
 3. tiene mayor exactitud en prueba que la diferencia de medias y que PCA con datos correlacionados;
 4. mejora con regularización ($S_W + \lambda I$) cuando $S_W$ es singular.
 
-El objetivo y el alcance completos están en la sección 1 de [`docs/desarrollo.md`](docs/desarrollo.md).
+El objetivo y el alcance completos están en la sección 1 del documento
+[`docs/desarrollo_matematico.pdf`](docs/desarrollo_matematico.pdf).
 
 ## Estado de la entrega parcial
 
@@ -42,7 +43,7 @@ El objetivo y el alcance completos están en la sección 1 de [`docs/desarrollo.
 ## Resultados principales
 
 **Ejemplo a mano.** El código reproduce los valores calculados a mano: $w \propto (4, 1)$, proyecciones
-$\{5, 9, 10\}$ y $\{19, 23, 24\}$, umbral 15 y $J = 7$.
+{5, 9, 10} y {19, 23, 24}, umbral 15 y $J = 7$.
 
 **Datos correlacionados** (10 repeticiones, 150 puntos por clase, mitad entrenamiento y mitad prueba):
 
@@ -75,7 +76,7 @@ tests/test_fisher.py     13 pruebas: ejemplo a mano, invarianzas, máximo de J, 
 experiments/run_all.py   genera todos los experimentos, tablas y figuras
 results/                 tablas (csv) y resumen de resultados (json)
 figures/                 gráficos usados en el documento y el video
-docs/                    desarrollo matemático (md y pdf) y guion del video (md y pdf)
+docs/                    desarrollo matemático y guion del video: el .pdf es para leer y el .md es su archivo fuente
 ```
 
 ## Cómo ejecutarlo
@@ -96,13 +97,13 @@ No usamos archivos de datos externos. Todos los datos son sintéticos y se gener
 `experiments/run_all.py`:
 
 - **Experimento A:** dos clases gaussianas con medias $(0,0)$ y $(1,0)$ y covarianza
-  $\begin{pmatrix} 4 & 1.8 \\ 1.8 & 1 \end{pmatrix}$. Semillas $2026 + k$, con $k = 0, \dots, 9$.
+  $\Sigma$ con varianzas 4 y 1 y covarianza 1.8 (en Python: `[[4, 1.8], [1.8, 1]]`). Semillas $2026 + k$, con $k = 0, \dots, 9$.
 - **Experimento B:** 40 variables (2 informativas, 1 copia con ruido de la primera y 37 de ruido),
   15 datos de entrenamiento por clase. Semillas $2126 + k$, con $k = 0, \dots, 9$.
 
 ## Detalles del método
 
-- $w$ se obtiene resolviendo $(S_W + \lambda I)\,w = \mu_1 - \mu_2$ con `np.linalg.solve`, sin calcular la inversa, con $\lambda = \gamma\,\mathrm{tr}(S_W)/p$.
+- $w$ se obtiene resolviendo $(S_W + \lambda I) w = \mu_1 - \mu_2$ con `np.linalg.solve`, sin calcular la inversa, con $\lambda = \gamma \cdot \mathrm{tr}(S_W)/p$.
 - El umbral es el punto medio de las medias proyectadas del entrenamiento (probabilidades previas iguales y costos simétricos).
 - Las tres direcciones se comparan con la misma regla de umbral, y PCA se calcula solo con el entrenamiento.
 - Entrenamiento y prueba se separan antes de ajustar, y $\gamma$ se elige con validación cruzada dentro del entrenamiento.
@@ -115,4 +116,5 @@ resultado puede cambiar, así que no concluimos que Fisher sea siempre el mejor 
 
 ## Referencias
 
-Las referencias completas, en formato IEEE, están al final de [`docs/desarrollo.md`](docs/desarrollo.md).
+Las referencias completas, en formato IEEE, están al final de
+[`docs/desarrollo_matematico.pdf`](docs/desarrollo_matematico.pdf).
