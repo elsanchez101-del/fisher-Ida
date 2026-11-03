@@ -1,12 +1,12 @@
 """Reproduce todos los experimentos. Uso: python experiments/run_all.py  (semilla fija)."""
-import sys, pathlib, json
+import sys, pathlib, json, warnings
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 import numpy as np, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as SK
-from fisher import *
+from fisher import FisherLDA, class_stats, fisher_J, fisher_direction, within_scatter
 
 SEED = 2026
 FIG, RES = ROOT / "figures", ROOT / "results"
@@ -109,7 +109,7 @@ def gen_hd(n, p, rng, dprime=1.5):
     noise = rng.normal(size=(len(y), p - 3))
     return np.hstack([X, red, noise]), y
 
-gammas = [0, 1e-4, 1e-3, 1e-2, 1e-1, 0.3, 1, 3]
+gammas = [0, 1e-4, 1e-3, 1e-2, 1e-1, 0.3, 1, 3, 10, 30, 100]
 def cv_gamma(Xtr, ytr, rng, k=5):
     folds = np.array_split(rng.permutation(len(ytr)), k); sc = np.zeros(len(gammas))
     for f in folds:
@@ -119,11 +119,16 @@ def cv_gamma(Xtr, ytr, rng, k=5):
     return gammas[int(np.argmax(sc))]  # empates -> menor gamma
 
 n, p, reps = 15, 40, 10
-acc = {g: [] for g in gammas}; chosen = []; acc_cv = []
+# Con gamma = 0 y N < p, S_W es singular y fisher_direction avisa: aquí ese caso es intencional.
+warnings.filterwarnings("ignore", message="S_W es numéricamente singular")
+acc = {g: [] for g in gammas}; chosen = []; acc_cv = []; acc_pinv = []; acc_dm = []
 for rep in range(reps):
     rng = np.random.default_rng(SEED + 100 + rep)
     Xtr, ytr = gen_hd(n, p, rng); Xte, yte = gen_hd(500, p, rng)
     for g in gammas: acc[g].append(FisherLDA(g).fit(Xtr, ytr).score(Xte, yte))
+    acc_pinv.append(FisherLDA(method="pinv").fit(Xtr, ytr).score(Xte, yte))       # pseudoinversa, solo para comparar
+    w_dm = unit(Xtr[ytr == 0].mean(0) - Xtr[ytr == 1].mean(0))                    # referencia: diferencia de medias
+    acc_dm.append(float(np.mean(thresh_clf(w_dm, Xtr, ytr)(Xte) == yte)))
     g = cv_gamma(Xtr, ytr, rng); chosen.append(g); acc_cv.append(FisherLDA(g).fit(Xtr, ytr).score(Xte, yte))
     if rep == 0:
         SW = within_scatter(Xtr, ytr); ev = np.linalg.eigvalsh(SW)
@@ -131,11 +136,16 @@ for rep in range(reps):
 rg = pd.DataFrame({"gamma": gammas, "acc_media": [np.mean(acc[g]) for g in gammas], "acc_std": [np.std(acc[g], ddof=1) for g in gammas]})
 rg.to_csv(RES / "exp_reg.csv", index=False)
 fig, ax = plt.subplots(figsize=(5, 3.2))
-xs = np.arange(len(gammas)); ax.errorbar(xs, rg.acc_media, rg.acc_std, fmt="o-", capsize=3)
+xs = np.arange(len(gammas)); ax.errorbar(xs, rg.acc_media, rg.acc_std, fmt="o-", capsize=3, label=r"Fisher con $S_W+\lambda I$")
+ax.axhline(np.mean(acc_pinv), color="#d62728", ls="--", lw=1, label="Pseudoinversa (sin regularizar)")
+ax.axhline(np.mean(acc_dm), color="#2ca02c", ls=":", lw=1.5, label="Diferencia de medias")
+ax.legend(fontsize=7, loc="lower right")
 ax.set_xticks(xs); ax.set_xticklabels(["0"] + [f"{g:g}" for g in gammas[1:]], fontsize=7)
 ax.set_xlabel(r"$\gamma$  ($\lambda=\gamma\,\mathrm{tr}(S_W)/p$)"); ax.set_ylabel("Exactitud (prueba)")
 ax.set_title(f"Regularización: N={2*n}, p={p}"); fig.tight_layout(); fig.savefig(FIG / "regularizacion.png"); plt.close(fig)
 
 json.dump(dict(manual=exp1, sklearn_max_dif=sk_diff, confusion_rep0=cm, singularidad=sing, gamma_cv=[float(g) for g in chosen],
-               acc_cv_media=float(np.mean(acc_cv)), acc_cv_std=float(np.std(acc_cv, ddof=1))), open(RES / "resumen.json", "w"), indent=1, default=float)
+               acc_cv_media=float(np.mean(acc_cv)), acc_cv_std=float(np.std(acc_cv, ddof=1)),
+               acc_pinv_media=float(np.mean(acc_pinv)), acc_pinv_std=float(np.std(acc_pinv, ddof=1)),
+               acc_dif_medias_media=float(np.mean(acc_dm)), acc_dif_medias_std=float(np.std(acc_dm, ddof=1))), open(RES / "resumen.json", "w"), indent=1, default=float)
 print(summ.to_string()); print(rg.round(3).to_string()); print(json.dumps(dict(sing=sing, cm=cm, sk=sk_diff, cv=float(np.mean(acc_cv)), g=[float(g) for g in chosen], J=exp1), default=float))
