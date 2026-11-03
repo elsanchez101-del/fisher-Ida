@@ -1,7 +1,7 @@
 # Discriminante lineal de Fisher (LDA) — avance del proyecto
 
 Álgebra Lineal Aplicada · Universidad del Pacífico. Proyecto grupal.
-Integrantes: _(completar)_
+Integrantes: Elison Sanchez, Rodolfo Brandariz, Marcelo Bravo y Marcelo Torres
 
 Implementación **desde cero** (numpy) del discriminante de Fisher para dos clases (y extensión multiclase),
 con verificación contra `scikit-learn` y experimentos reproducibles.
