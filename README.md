@@ -27,6 +27,10 @@ experimentos con datos sintéticos.
 El objetivo y el alcance completos están en la sección 1 del documento
 [`docs/desarrollo_matematico.pdf`](docs/desarrollo_matematico.pdf).
 
+**Conexión con el curso.** Usamos producto interno (la proyección $y = w^\top x$), formas cuadráticas y matrices
+simétricas semidefinidas positivas, la desigualdad de Cauchy–Schwarz, sistemas lineales, autovalores generalizados,
+rango y condicionamiento de matrices, y regularización.
+
 ## Estado de la entrega parcial
 
 | Lo que pide la entrega | Dónde está | Estado |
