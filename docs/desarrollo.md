@@ -159,7 +159,7 @@ Si $X\mid Y=k\sim\mathcal N(\mu_k,\Sigma)$ con priors $\pi_k$, la regla de Bayes
 
 # 10. Organización del equipo y contribuciones
 
-El proyecto se desarrolla de manera colaborativa. Las responsabilidades iniciales se distribuyen de la siguiente manera:
+Cada integrante se encargó de las siguientes partes del proyecto:
 
 | Integrante | Responsabilidad principal | Actividades |
 |---|---|---|
@@ -170,15 +170,26 @@ El proyecto se desarrolla de manera colaborativa. Las responsabilidades iniciale
 
 # 11. Cronograma de actividades
 
-| Actividad | Responsable(s) | Fecha límite | Estado |
-|---|---|---|---|
-| Revisión y corrección matemática | Elison Sanchez y Rodolfo Brandariz | 2/11/2026 | En revisión |
-| Verificación de la implementación y pruebas | Marcelo Bravo | 2/11/2026 | En revisión |
-| Actualización de experimentos y resultados | Marcelo Bravo y Marcelo Torres | 2/11/2026 | En revisión |
-| Interpretación y discusión de resultados | Todos los integrantes | 2/11/2026 | En revisión |
-| Actualización de documentos y referencias | Rodolfo Brandariz y Marcelo Torres | 7/11/2026 | En revisión |
-| Preparación y grabación del video | Todos los integrantes | 7/11/2026 | Pendiente |
-| Verificación final del repositorio y entrega | Todos los integrantes | 9/11/2026 | Pendiente |
+**Hasta la entrega parcial (4 de noviembre de 2026)**
+
+| Actividad | Responsable(s) | Fecha | Estado |
+|----------------------------|--------------|----------|--------|
+| Formulación del criterio, demostración y revisión de la notación | Elison Sanchez | Antes del 4/11/2026 | Completado |
+| Ejemplo a mano, matrices de dispersión y proyecciones | Rodolfo Brandariz | Antes del 4/11/2026 | Completado |
+| Implementación en Python, pruebas y comparación con PCA | Marcelo Bravo | Antes del 4/11/2026 | Completado |
+| Experimentos de regularización, análisis de resultados y gráficos | Marcelo Torres | Antes del 4/11/2026 | Completado |
+| Documentación del repositorio, referencias y guion del video | Rodolfo Brandariz y Marcelo Torres | Antes del 4/11/2026 | Completado |
+| Presentación de la entrega parcial (etiqueta `avance-parcial`) | Todos los integrantes | 4/11/2026 | En curso |
+
+**Hasta la entrega final** (la fecha se confirmará en Blackboard)
+
+| Actividad | Responsable(s) | Estado |
+|-----------------------------------|-------------|---------|
+| Incorporar la retroalimentación de la entrega parcial | Todos los integrantes | Pendiente |
+| Preparar las diapositivas y figuras del video | Todos los integrantes | Pendiente |
+| Grabar el video, cada uno su parte del guion | Todos los integrantes | Pendiente |
+| Revisión final del repositorio y etiqueta `entrega-final` | Rodolfo Brandariz y Marcelo Torres | Pendiente |
+| Preparar la ronda de preguntas (repasar todo el proyecto) | Todos los integrantes | Pendiente |
 
 # Referencias
 
