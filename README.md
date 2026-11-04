@@ -43,6 +43,7 @@ rango y condicionamiento de matrices, y regularización.
 | Guion del video | `docs/guion_video.md` y `docs/guion_video.pdf` | Listo |
 | Contribuciones de cada integrante | `docs/desarrollo.md` (sec. 10) | Listo |
 | Pendientes y cronograma | `docs/desarrollo.md` (sec. 8 y 11) | Listo |
+| Declaración de uso de IA | `docs/declaracion_ia.md` | Listo |
 
 ## Resultados principales
 
@@ -82,6 +83,7 @@ experiments/run_all.py   genera todos los experimentos, tablas y figuras
 results/                 tablas (csv) y resumen de resultados (json)
 figures/                 gráficos usados en el documento y el video
 docs/                    desarrollo matemático y guion del video: el .pdf es para leer y el .md es su archivo fuente
+                         declaracion_ia.md: declaración de uso de inteligencia artificial
 ```
 
 ## Cómo ejecutarlo
