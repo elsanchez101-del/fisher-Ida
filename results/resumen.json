@@ -48,6 +48,17 @@
    ]
   ]
  },
+ "exactitud_teorica": {
+  "Diferencia de medias": 0.5987063256829237,
+  "Fisher": 0.7168602129773355,
+  "PCA (PC1)": 0.5822519562306404
+ },
+ "exactitud_obtenida": {
+  "Diferencia de medias": 0.5793333333333333,
+  "Fisher": 0.6946666666666667,
+  "PCA (PC1)": 0.5586666666666666
+ },
+ "J_teorico": 1.3157894736842108,
  "singularidad": {
   "N": 30,
   "p": 40,
