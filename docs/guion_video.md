@@ -89,7 +89,7 @@ usando los mismos puntos con los que ajustamos.
 **Pantalla:** Archivo `src/fisher.py` y ejecución de `pytest`.
 
 Bueno, ahora pasamos al código. Programamos todo en Python con NumPy. Para sacar $w$ resolvemos el sistema
-con `solve`, sin calcular la inversa. Además armamos 13 pruebas: que salga el ejemplo a mano, que $J$ no
+con `solve`, sin calcular la inversa. Además armamos 14 pruebas: que salga el ejemplo a mano, que $J$ no
 cambie al escalar $w$, que ninguna de 500 direcciones al azar le gane a Fisher, que el código avise si las
 medias son iguales o si $S_W$ es singular, y que nuestro resultado coincida con el de scikit-learn. Y
 coincide: la diferencia es del orden de $10^{-16}$.

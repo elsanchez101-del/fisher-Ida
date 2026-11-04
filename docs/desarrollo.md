@@ -99,6 +99,18 @@ Todo es reproducible con `python experiments/run_all.py` (semillas $2026+k$, $k=
 
 (media ± desv. estándar en 10 repeticiones). Fisher gana en las 10 repeticiones de este escenario. La PC1 apunta a la dirección de máxima varianza (la diagonal de la nube), irrelevante para separar. La dirección de Fisher coincide con `LinearDiscriminantAnalysis` de scikit-learn [4], con `solver="lsqr"` (diferencia $\sim10^{-16}$). Matriz de confusión (repetición 0, fila = real): Fisher $\begin{pmatrix}52&20\\20&58\end{pmatrix}$, diferencia de medias $\begin{pmatrix}44&28\\32&46\end{pmatrix}$, PC1 $\begin{pmatrix}44&28\\35&43\end{pmatrix}$.
 
+**Comparación con el valor teórico.** Como generamos los datos nosotros, conocemos sus medias y su covarianza verdaderas, y podemos calcular cuánto acertaría cada dirección con infinitos datos. Al proyectar sobre $w$, cada clase sigue siendo normal, con medias separadas por $\delta=|w^\top\Delta|$ y desviación $\sigma=\sqrt{w^\top\Sigma w}$; con el umbral en el punto medio, la exactitud es
+$$\Phi\!\left(\frac{\delta}{2\sigma}\right),$$
+donde $\Phi$ es la función de distribución de la normal estándar. Para la dirección de Fisher, $\delta/\sigma$ es la distancia de Mahalanobis $\sqrt{\Delta^\top\Sigma^{-1}\Delta}\approx1.147$, y la exactitud es $\Phi(0.574)\approx0.717$, que es la mejor posible con estos datos (la regla de Bayes, sección 9). Para PCA usamos la primera componente de la covarianza total de la mezcla, $\Sigma+\tfrac14\Delta\Delta^\top$.
+
+| Método | Exactitud teórica | Exactitud obtenida | Diferencia |
+|---|---|---|---|
+| Diferencia de medias | 0.599 | 0.579 | −0.020 |
+| **Fisher** (óptimo de Bayes) | **0.717** | **0.695** | −0.022 |
+| PCA (PC1) | 0.582 | 0.559 | −0.023 |
+
+Los tres métodos quedan cerca de su valor teórico y en el mismo orden, lo que confirma que los resultados tienen sentido. La lectura importante es que Fisher está a solo 2 puntos del máximo posible: el 30 % que falla no es un defecto del método, sino que las dos clases realmente se superponen. La pequeña diferencia que queda en los tres métodos se explica porque las medias, la covarianza y el umbral se estiman con solo 150 puntos de entrenamiento. Del mismo modo, el $J$ de Fisher en el entrenamiento ($1.19\pm0.21$) queda dentro de una desviación estándar del valor teórico 1.32. Estos valores teóricos los calcula `experiments/run_all.py` (en `results/resumen.json`) y la fórmula se verifica en `test_theoretical_accuracy`.
+
 ![Direcciones y frontera (repetición 0)](../figures/gauss_direcciones.png){width=60%}
 
 ![Histogramas de proyecciones en prueba](../figures/gauss_histogramas.png){width=95%}
