@@ -42,19 +42,22 @@ $$J(w)=\frac{(w^\top(\mu_1-\mu_2))^2}{w^\top S_Ww},\qquad w\neq 0 .$$
 # 3. Teorema y demostración
 
 **Teorema.** Si $S_W\succ0$ y $d\neq0$, los maximizadores de $J$ son exactamente $w=c\,S_W^{-1}d$ con $c\neq0$, y
-$$\max J = d^\top S_W^{-1}d \quad(\text{distancia de Mahalanobis al cuadrado}).$$
+$$\max J = d^\top S_W^{-1}d .$$
+Este valor es proporcional a la distancia de Mahalanobis al cuadrado entre las medias: si $\hat\Sigma=S_W/(N-2)$ es la covarianza agrupada, entonces $d^\top S_W^{-1}d=d^\top\hat\Sigma^{-1}d/(N-2)$.
 
-*Demostración.* Como $S_W\succ0$ define un producto interno $\langle u,v\rangle_W=u^\top S_Wv$. Sea $v=S_W^{1/2}w$. Entonces $w^\top d=v^\top S_W^{-1/2}d$ y $w^\top S_Ww=\|v\|^2$, de modo que
+*Demostración.* Como $S_W$ es simétrica, por el teorema espectral se puede escribir $S_W=Q\Lambda Q^\top$, con $Q$ ortogonal y $\Lambda$ diagonal con los autovalores. Como además es definida positiva, todos los autovalores son positivos, así que existe $S_W^{1/2}=Q\Lambda^{1/2}Q^\top$, que también es simétrica, definida positiva e invertible, y cumple $S_W^{1/2}S_W^{1/2}=S_W$. Sea $v=S_W^{1/2}w$. Entonces $w^\top d=v^\top S_W^{-1/2}d$ y $w^\top S_Ww=\|v\|^2$, de modo que
 $$J=\frac{(v^\top a)^2}{\|v\|^2},\quad a=S_W^{-1/2}d .$$
 Por Cauchy–Schwarz, $(v^\top a)^2\le\|v\|^2\|a\|^2$, con igualdad si y solo si $v=ca$. Luego $J\le\|a\|^2=d^\top S_W^{-1}d$ y la igualdad ocurre para $v=cS_W^{-1/2}d$, es decir $w=S_W^{-1/2}v=c\,S_W^{-1}d$. $\blacksquare$
 
-**Casos.** Si $S_W=\sigma^2I$, entonces $w\propto d$ (diferencia de medias): no hay correlación que corregir. Si $d=0$, $J\equiv0$ y no hay dirección preferida; en ese caso el código lanza un error en lugar de devolver un vector sin sentido. En la práctica resolvemos el sistema $S_Ww=d$ sin calcular $S_W^{-1}$.
+**Casos.** Si $S_W=\sigma^2I$, entonces $w\propto d$ (diferencia de medias): no hay correlación que corregir. Si $d=0$, $J\equiv0$ y no hay dirección preferida; en ese caso el código lanza un error en lugar de devolver un vector sin sentido. En la práctica resolvemos el sistema $S_Ww=d$ (con `np.linalg.solve`, que usa una factorización LU) en lugar de calcular $S_W^{-1}$ y multiplicar: calcular la inversa hace más operaciones y acumula más error de redondeo, sobre todo cuando $S_W$ está mal condicionada, y no la necesitamos para nada más.
 
 # 4. Formulación de Rayleigh y varias clases
 
 Como $(w^\top d)^2=w^\top S_Bw$ con $S_B=dd^\top$ (rango $\le1$),
-$$J(w)=\frac{w^\top S_Bw}{w^\top S_Ww},\qquad S_Bw=\lambda S_Ww ,$$
-Esto es un cociente de Rayleigh *generalizado*. Si $S_W$ es invertible, podemos hacer el mismo cambio de la demostración, $v=S_W^{1/2}w$, y el problema pasa a ser encontrar los autovalores de la matriz simétrica $S_W^{-1/2}S_BS_W^{-1/2}$. Esta matriz tiene los mismos autovalores que $S_W^{-1}S_B$, porque son semejantes. El valor máximo de $J$ es entonces el autovalor más grande, y en el caso de dos clases ese autovalor es $d^\top S_W^{-1}d$, que es justo lo que obtuvimos en el teorema.
+$$J(w)=\frac{w^\top S_Bw}{w^\top S_Ww},\qquad S_Bw=\lambda S_Ww .$$
+Esto es un cociente de Rayleigh *generalizado*. Si $S_W$ es invertible, podemos hacer el mismo cambio de la demostración, $v=S_W^{1/2}w$, y el problema pasa a ser encontrar los autovalores de la matriz simétrica $S_W^{-1/2}S_BS_W^{-1/2}$. Esta matriz tiene los mismos autovalores que $S_W^{-1}S_B$, porque son semejantes. El valor máximo de $J$ es entonces el autovalor más grande. En el caso de dos clases se puede calcular directamente: como $S_B=dd^\top$ tiene rango 1, la matriz $S_W^{-1}S_B=S_W^{-1}dd^\top$ también tiene rango 1, así que tiene un solo autovalor distinto de cero. Para encontrarlo basta probar con $w=S_W^{-1}d$:
+$$S_W^{-1}dd^\top(S_W^{-1}d)=(d^\top S_W^{-1}d)\,S_W^{-1}d ,$$
+de modo que $S_W^{-1}d$ es autovector con autovalor $d^\top S_W^{-1}d$. Es justo el máximo y la dirección que obtuvimos en el teorema.
 
 Para $K$ clases, con $n_k$, $\mu_k$, media global $\mu$ y $S_B=\sum_k n_k(\mu_k-\mu)(\mu_k-\mu)^\top$, las direcciones son los autovectores generalizados de mayores autovalores [2], [5]. Como $\sum_k n_k(\mu_k-\mu)=0$, $\operatorname{rango}(S_B)\le K-1$; hay a lo sumo $\min\{p,K-1\}$ direcciones útiles (verificado en `test_rank_SB_multiclass`).
 
@@ -72,13 +75,15 @@ $\mathcal C_1=\{(1,1),(2,1),(2,2)\}$, $\mathcal C_2=\{(4,3),(5,3),(5,4)\}$.
 
 Regla: $4x_1+x_2<15\Rightarrow\mathcal C_1$. Además $J_{\max}=d^\top S_W^{-1}d=7$, igual al valor calculado numéricamente. Es una verificación de la teoría, no una medida de generalización, porque se clasifican los mismos puntos con que se ajustó.
 
+**Por qué el umbral va en el punto medio.** Fisher solo da la dirección $w$; el umbral es una decisión aparte. Usamos el punto medio $t=\tfrac12(w^\top\mu_1+w^\top\mu_2)$ porque es la regla óptima cuando las dos clases son gaussianas con la misma covarianza, tienen la misma probabilidad previa y equivocarse en un sentido cuesta lo mismo que en el otro. En ese caso (sección 9), la regla de Bayes compara $\delta_1(x)-\delta_2(x)=w^\top x-\tfrac12 w^\top(\mu_1+\mu_2)$ con cero, usando $w=\Sigma^{-1}(\mu_1-\mu_2)$; eso es exactamente comparar $w^\top x$ con el punto medio. Si las clases tuvieran probabilidades previas distintas, el umbral se movería en $\log(\pi_2/\pi_1)$.
+
 ![Ejemplo a mano](../figures/ej_mano.png){width=55%}
 
 # 6. Singularidad y regularización
 
 $S_W$ tiene rango a lo sumo $\min(p,N-K)$; es singular si $N-K<p$ o hay variables redundantes. Si $d=d_R+d_0$ con $d_R\in\operatorname{im}S_W$, $d_0\in\ker S_W$ y $d_0\ne0$, el cociente no tiene máximo finito (direcciones con dispersión intraclase cero pero separación positiva). Se regulariza:
 $$S_{W,\lambda}=S_W+\lambda I,\quad w_\lambda=(S_W+\lambda I)^{-1}d,\quad \lambda=\gamma\,\operatorname{tr}(S_W)/p .$$
-Hay que tener claro que así ya no se maximiza el criterio original, sino uno modificado [5]. Cuando $\lambda$ es muy grande, el término $\lambda I$ domina sobre $S_W$ y $w_\lambda$ apunta casi en la dirección de $d$, como en el caso $S_W=\sigma^2 I$. El valor de $\gamma$ lo elegimos solo con validación dentro del entrenamiento.
+Escalamos $\lambda$ con $\operatorname{tr}(S_W)/p$, que es el promedio de los autovalores de $S_W$, es decir, la dispersión típica por variable. Así $\gamma$ no tiene unidades: si multiplicamos todos los datos por una constante $c$, $S_W$ y $\operatorname{tr}(S_W)$ se multiplican por $c^2$, $\lambda$ cambia igual y la dirección $w_\lambda$ no cambia. Además, $\gamma$ dice directamente cuánto pesa $\lambda I$ frente a $S_W$: con $\gamma=1$, el término agregado es del mismo tamaño que la dispersión promedio. Hay que tener claro que así ya no se maximiza el criterio original, sino uno modificado [5]. Cuando $\lambda$ es muy grande, el término $\lambda I$ domina sobre $S_W$ y $w_\lambda$ apunta casi en la dirección de $d$, como en el caso $S_W=\sigma^2 I$. El valor de $\gamma$ lo elegimos solo con validación dentro del entrenamiento.
 
 # 7. Resultados preliminares
 
