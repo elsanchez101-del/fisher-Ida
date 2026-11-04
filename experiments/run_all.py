@@ -6,7 +6,7 @@ import numpy as np, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as SK
-from fisher import FisherLDA, class_stats, fisher_J, fisher_direction, within_scatter
+from fisher import FisherLDA, class_stats, fisher_J, fisher_direction, theoretical_accuracy, within_scatter
 
 SEED = 2026
 FIG, RES = ROOT / "figures", ROOT / "results"
@@ -68,6 +68,15 @@ df = pd.DataFrame(rows); df.to_csv(RES / "exp_gauss_reps.csv", index=False)
 summ = df.groupby("metodo")[["J_train", "acc_test", "angulo_vs_fisher"]].agg(["mean", "std"]).round(3)
 summ.to_csv(RES / "exp_gauss_resumen.csv")
 sk_diff = float(df["dif_sklearn"].max())
+
+# Exactitud teórica (infinitos datos) de cada dirección, usando las medias y la covarianza verdaderas
+Delta = MU1 - MU2
+w_teo = {"Diferencia de medias": Delta,
+         "Fisher": np.linalg.solve(SIG, Delta),                                   # óptimo de Bayes
+         "PCA (PC1)": np.linalg.eigh(SIG + np.outer(Delta, Delta) / 4)[1][:, -1]}  # PC1 de la mezcla
+acc_teo = {k: theoretical_accuracy(v, MU1, MU2, SIG) for k, v in w_teo.items()}
+acc_obt = df.groupby("metodo")["acc_test"].mean().to_dict()
+J_teo = float(Delta @ np.linalg.solve(SIG, Delta))
 
 # Repetición 0: figuras detalladas
 rng = np.random.default_rng(SEED); Xa, ya = gen(150, rng); idx = rng.permutation(300); tr, te = idx[:150], idx[150:]
@@ -144,7 +153,8 @@ ax.set_xticks(xs); ax.set_xticklabels(["0"] + [f"{g:g}" for g in gammas[1:]], fo
 ax.set_xlabel(r"$\gamma$  ($\lambda=\gamma\,\mathrm{tr}(S_W)/p$)"); ax.set_ylabel("Exactitud (prueba)")
 ax.set_title(f"Regularización: N={2*n}, p={p}"); fig.tight_layout(); fig.savefig(FIG / "regularizacion.png"); plt.close(fig)
 
-json.dump(dict(manual=exp1, sklearn_max_dif=sk_diff, confusion_rep0=cm, singularidad=sing, gamma_cv=[float(g) for g in chosen],
+json.dump(dict(manual=exp1, sklearn_max_dif=sk_diff, confusion_rep0=cm,
+               exactitud_teorica=acc_teo, exactitud_obtenida=acc_obt, J_teorico=J_teo, singularidad=sing, gamma_cv=[float(g) for g in chosen],
                acc_cv_media=float(np.mean(acc_cv)), acc_cv_std=float(np.std(acc_cv, ddof=1)),
                acc_pinv_media=float(np.mean(acc_pinv)), acc_pinv_std=float(np.std(acc_pinv, ddof=1)),
                acc_dif_medias_media=float(np.mean(acc_dm)), acc_dif_medias_std=float(np.std(acc_dm, ddof=1))), open(RES / "resumen.json", "w"), indent=1, default=float)
