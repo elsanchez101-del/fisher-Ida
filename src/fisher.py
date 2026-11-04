@@ -61,6 +61,21 @@ def fisher_direction(X, y, gamma=0.0, method="solve"):
     return w / np.linalg.norm(w)
 
 
+def theoretical_accuracy(w, mu1, mu2, Sigma):
+    """Exactitud esperada (infinitos datos) de proyectar sobre w y usar el umbral en el punto medio,
+    si las clases son N(mu1, Sigma) y N(mu2, Sigma) con igual probabilidad.
+
+    Al proyectar, cada clase es normal con medias w^T mu_k y desviación sigma = sqrt(w^T Sigma w);
+    con el umbral en el punto medio, la exactitud es Phi(delta / (2 sigma)), delta = |w^T (mu1 - mu2)|.
+    Con w = Sigma^{-1}(mu1 - mu2) se obtiene Phi(Delta / 2), Delta = distancia de Mahalanobis (óptimo de Bayes).
+    """
+    from scipy.stats import norm
+    w = np.asarray(w, float)
+    delta = abs(w @ (np.asarray(mu1, float) - np.asarray(mu2, float)))
+    sigma = np.sqrt(w @ np.asarray(Sigma, float) @ w)
+    return float(norm.cdf(delta / (2 * sigma)))
+
+
 def fisher_J(w, X, y):
     """Criterio de Fisher J(w) = (w^T(mu1-mu2))^2 / (w^T S_W w)."""
     _, mus, Ss, _ = class_stats(X, y)
