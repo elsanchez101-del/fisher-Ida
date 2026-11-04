@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as SK
 from fisher import (FisherLDA, class_stats, fisher_J, fisher_direction,
-                    multiclass_fisher, within_scatter)
+                    multiclass_fisher, theoretical_accuracy, within_scatter)
 
 C1 = np.array([[1,1],[2,1],[2,2]], float); C2 = np.array([[4,3],[5,3],[5,4]], float)
 X = np.vstack([C1, C2]); y = np.array([0,0,0,1,1,1])
@@ -101,3 +101,15 @@ def test_singular_solve_warns_and_pinv_is_finite():
     with pytest.warns(RuntimeWarning, match="singular"):
         fisher_direction(Xs, ys)
     assert np.all(np.isfinite(fisher_direction(Xs, ys, method="pinv")))
+
+def test_theoretical_accuracy():
+    """Phi(delta / 2 sigma): caso conocido y Fisher (Bayes) como máximo frente a otras direcciones."""
+    from scipy.stats import norm
+    I = np.eye(2)
+    assert np.isclose(theoretical_accuracy([1, 0], [0, 0], [2, 0], I), norm.cdf(1))
+    S = np.array([[4, 1.8], [1.8, 1]]); m1, m2 = np.array([0., 0.]), np.array([1., 0.])
+    wF = np.linalg.solve(S, m1 - m2); Delta = np.sqrt((m1 - m2) @ wF)
+    best = theoretical_accuracy(wF, m1, m2, S)
+    assert np.isclose(best, norm.cdf(Delta / 2))
+    rng = np.random.default_rng(6)
+    assert all(theoretical_accuracy(rng.normal(size=2), m1, m2, S) <= best + 1e-12 for _ in range(500))
