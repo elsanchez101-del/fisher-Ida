@@ -1,0 +1,4 @@
+comparacion,solo_acierta_fisher,solo_acierta_otro,p_valor
+Fisher vs PCA (1ª comp.),0,0,1.0
+Fisher vs Dif. de medias,0,0,1.0
+Fisher vs Pesos iguales,2,2,1.0

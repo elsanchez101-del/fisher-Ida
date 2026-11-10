@@ -1,0 +1,6 @@
+,exactitud,exactitud,balanceada,balanceada,recall_riesgosa,recall_riesgosa,J_train,J_train
+,mean,std,mean,std,mean,std,mean,std
+metodo,,,,,,,,
+LDA (Fisher),0.696,0.026,0.682,0.028,0.591,0.063,1.059,0.118
+PCA (1ª comp.),0.698,0.036,0.688,0.039,0.624,0.075,1.023,0.134
+Dif. de medias,0.696,0.036,0.685,0.038,0.616,0.073,1.037,0.129
