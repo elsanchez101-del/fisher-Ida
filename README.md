@@ -87,10 +87,10 @@ es $x = (\sigma, \beta, \mathrm{MDD}, \log(1+D/E))$ y es riesgosa si al año sig
 | Siempre la clase mayoritaria | 0.578 | 0.575 |
 
 Aquí Fisher no gana. La razón, con álgebra lineal: al escribir $w = \sum_i (u_i^\top d / \lambda_i)\, u_i$ con los
-autovectores de $S_W$, el 93 % de $w$ viene de un solo autovector y las otras tres direcciones tienen más ruido que
-señal; Fisher las divide entre autovalores pequeños y amplifica ese ruido. Regularizar lo lleva a la diferencia de
-medias sin perder exactitud, y con 40 acciones de prueba (intervalo de confianza de 47 % a 76 %) ningún método se
-distingue de otro. Está explicado en la sección 8 de `docs/desarrollo.md` y en [`aplicacion/README.md`](aplicacion/README.md).
+autovectores de $S_W$, el 93 % de $w$ viene de un solo autovector, la dirección de "riesgo general", que es casi la
+misma que la de la diferencia de medias. Por eso corregir con $S_W^{-1}$ no aporta nada aquí, y regularizar lleva a
+Fisher hasta la diferencia de medias sin cambiar la exactitud. Con solo 40 acciones de prueba, además, una diferencia
+de uno o dos aciertos no es concluyente. Está explicado en la sección 8 de `docs/desarrollo.md` y en [`aplicacion/README.md`](aplicacion/README.md).
 
 ## Organización de archivos
 
@@ -99,7 +99,7 @@ src/fisher.py            implementación: medias, S_W, dirección w, criterio J,
 tests/test_fisher.py     14 pruebas: ejemplo a mano, invarianzas, máximo de J, comparación con sklearn, rango de S_B,
                          S_W singular, medias iguales, gamma grande, intercambio de etiquetas y exactitud teórica
 tests/test_aplicacion.py 6 pruebas del caso aplicado: misma dirección que src/fisher.py, orientación, estandarización,
-                         separación estratificada, métricas y AUC, máximo de J
+                         separación estratificada, métricas, máximo de J
 experiments/run_all.py   genera los experimentos sintéticos, tablas y figuras
 results/  figures/       tablas (csv, json) y gráficos de los experimentos sintéticos
 aplicacion/              caso aplicado con datos reales: scripts, datos guardados (datos/), tablas (resultados/) y
@@ -147,9 +147,9 @@ guardados en `aplicacion/datos/` para que el análisis sea reproducible sin cone
 
 Los datos sintéticos tienen la misma covarianza en las dos clases, que es el caso favorable para Fisher, y
 en el caso real Fisher no gana. No concluimos que Fisher sea siempre el mejor método: conviene cuando hay
-una dirección de poca varianza con mucha señal, y en otro caso la diferencia de medias regularizada hace lo
+una dirección con poca dispersión dentro de las clases que las separa mucho, y en otro caso la diferencia de medias regularizada hace lo
 mismo con menos riesgo. Las limitaciones del caso aplicado (sesgo de supervivencia, fecha del balance, prueba
-pequeña) están en la sección 8.8 del documento.
+pequeña) están en la sección 8.6 del documento.
 
 ## Referencias
 
