@@ -145,11 +145,3 @@ def metricas(real, pred):
     return dict(aciertos=int(np.trace(cm)), exactitud=np.trace(cm) / cm.sum(),
                 balanceada=(rec1 + rec2) / 2, riesgosas_detectadas=rec2, precision_riesgosa=prec2,
                 etiq_como_1=int(cm[:, 0].sum()), etiq_como_2=int(cm[:, 1].sum()), cm=cm)
-
-
-def auc(puntaje, y):
-    """Área bajo la curva ROC: probabilidad de que una riesgosa tenga mayor puntaje que una
-    no riesgosa (empates cuentan 1/2). No depende del umbral, solo de la dirección."""
-    p2, p1 = puntaje[y == 2], puntaje[y == 1]
-    mayor = (p2[:, None] > p1[None, :]).sum() + 0.5 * (p2[:, None] == p1[None, :]).sum()
-    return float(mayor / (len(p2) * len(p1)))

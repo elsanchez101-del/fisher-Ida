@@ -28,13 +28,11 @@ con los archivos guardados.
 
 | Archivo | Qué hace |
 |---|---|
-| `comun.py` | Parámetros y funciones compartidas: carga, estandarización, direcciones (Fisher, PCA, diferencia de medias, pesos iguales), umbral, métricas y AUC |
+| `comun.py` | Parámetros y funciones compartidas: carga, estandarización, direcciones (Fisher, PCA, diferencia de medias, pesos iguales), umbral y métricas |
 | `datos_300.py` | Descarga los datos y arma las 300 acciones de entrenamiento (opcional) |
 | `escenarios_lda_pca.py` | Validación interna: Fisher frente a PCA y la diferencia de medias en 20 particiones 70/30 |
 | `validacion_externa.py` | Prueba única con acciones nuevas que el modelo nunca vio |
 | `analisis_espectral.py` | Descomposición espectral de w = Σ⁻¹d y camino de regularización de γ = 0 (Fisher) a γ → ∞ (diferencia de medias) |
-| `comparacion_sin_umbral.py` | AUC (compara solo la dirección, sin umbral), intervalos de Wilson y prueba de McNemar |
-| `estabilidad_pesos.py` | Bootstrap: cuánto varían los pesos de w y si su signo es confiable |
 | `tres_clases.py` | Fisher con tres clases de riesgo y el plano span(w₁, w₂) |
 | `correr_todo.py` | Corre todo en orden a partir de los datos guardados |
 

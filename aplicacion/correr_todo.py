@@ -22,11 +22,9 @@ for archivo in (c.ARCHIVO, c.ARCHIVO_NUEVAS):
     if not os.path.exists(archivo):
         raise SystemExit(f"Falta {archivo}. Los datos se generan con datos_300.py y validacion_externa.py.")
 
-import escenarios_lda_pca, validacion_externa, analisis_espectral, comparacion_sin_umbral, \
-    estabilidad_pesos, tres_clases
+import escenarios_lda_pca, validacion_externa, analisis_espectral, tres_clases
 
-for modulo in (escenarios_lda_pca, validacion_externa, analisis_espectral, comparacion_sin_umbral,
-               estabilidad_pesos, tres_clases):
+for modulo in (escenarios_lda_pca, validacion_externa, analisis_espectral, tres_clases):
     print("\n" + "=" * 100 + f"\n{modulo.__name__}.py\n" + "=" * 100)
     modulo.main()
 
