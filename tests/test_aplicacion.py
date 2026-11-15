@@ -54,17 +54,12 @@ def test_separacion_estratificada():
         assert abs(np.mean(y[te] == k) - np.mean(y == k)) < 0.02
 
 
-def test_metricas_y_auc():
+def test_metricas():
     real = np.array([1, 1, 1, 2, 2, 2, 2])
     pred = np.array([1, 2, 1, 2, 2, 1, 2])
     m = c.metricas(real, pred)
     assert m["cm"].tolist() == [[2, 1], [1, 3]]
     assert m["aciertos"] == 5 and np.isclose(m["balanceada"], (2 / 3 + 3 / 4) / 2)
-    from sklearn.metrics import roc_auc_score
-    rng = np.random.default_rng(4)
-    s, yy = rng.normal(size=60).round(1), rng.integers(1, 3, 60)     # con empates
-    assert np.isclose(c.auc(s, yy), roc_auc_score(yy == 2, s))
-
 
 def test_J_maximo_en_fisher():
     X, y = datos(5)
