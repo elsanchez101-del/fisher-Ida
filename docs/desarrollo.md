@@ -68,8 +68,8 @@ $\mathcal C_1=\{(1,1),(2,1),(2,2)\}$, $\mathcal C_2=\{(4,3),(5,3),(5,4)\}$.
 | Paso | Resultado |
 |---|---|
 | Medias | $\mu_1=(5/3,4/3)$, $\mu_2=(14/3,10/3)$, $d=(-3,-2)$ |
-| Dispersión | $S_1=S_2=\begin{pmatrix}2/3&1/3\\1/3&2/3\end{pmatrix}$, $S_W=\begin{pmatrix}4/3&2/3\\2/3&4/3\end{pmatrix}$ |
-| Sistema $S_Ww=d$ | $\begin{pmatrix}4&2\\2&4\end{pmatrix}w=\begin{pmatrix}-9\\-6\end{pmatrix}\Rightarrow w=(-2,-\tfrac12)\propto(4,1)$ |
+| Dispersión | $S_1=S_2=\begin{pmatrix}2/3&1/3\cr 1/3&2/3\end{pmatrix}$, $S_W=\begin{pmatrix}4/3&2/3\cr 2/3&4/3\end{pmatrix}$ |
+| Sistema $S_Ww=d$ | $\begin{pmatrix}4&2\cr 2&4\end{pmatrix}w=\begin{pmatrix}-9\cr -6\end{pmatrix}\Rightarrow w=(-2,-\tfrac12)\propto(4,1)$ |
 | Proyección $y=4x_1+x_2$ | $\mathcal C_1\mapsto\{5,9,10\}$, $\mathcal C_2\mapsto\{19,23,24\}$ |
 | Medias proyectadas y umbral | $m_1=8$, $m_2=22$, $t=15$ |
 
@@ -89,7 +89,7 @@ Escalamos $\lambda$ con $\operatorname{tr}(S_W)/p$, que es el promedio de los au
 
 Todo es reproducible con `python experiments/run_all.py` (semillas $2026+k$, $k=0,\dots,9$).
 
-**Experimento A: gaussianas correlacionadas.** $\mu_1=(0,0)$, $\mu_2=(1,0)$, $\Sigma=\begin{pmatrix}4&1.8\\1.8&1\end{pmatrix}$ (definida positiva: $\det=0.76$). 150 puntos por clase; división 50 % entrenamiento / 50 % prueba hecha antes del ajuste. Misma regla de umbral (punto medio de medias proyectadas de entrenamiento) para las tres direcciones. Para reportar $J$ usamos $\hat\Sigma=S_W/(N-2)$ en lugar de $S_W$. La razón es que $S_W$ es una suma sobre todos los puntos y crece con $N$, mientras que $\hat\Sigma$ es la covarianza agrupada y no depende del tamaño de la muestra; así el valor se puede comparar con el teórico. Con $\Delta=\mu_1-\mu_2=(-1,0)$, el máximo teórico es $\Delta^\top\Sigma^{-1}\Delta=1/0.76\approx1.32$.
+**Experimento A: gaussianas correlacionadas.** $\mu_1=(0,0)$, $\mu_2=(1,0)$, $\Sigma=\begin{pmatrix}4&1.8\cr 1.8&1\end{pmatrix}$ (definida positiva: $\det=0.76$). 150 puntos por clase; división 50 % entrenamiento / 50 % prueba hecha antes del ajuste. Misma regla de umbral (punto medio de medias proyectadas de entrenamiento) para las tres direcciones. Para reportar $J$ usamos $\hat\Sigma=S_W/(N-2)$ en lugar de $S_W$. La razón es que $S_W$ es una suma sobre todos los puntos y crece con $N$, mientras que $\hat\Sigma$ es la covarianza agrupada y no depende del tamaño de la muestra; así el valor se puede comparar con el teórico. Con $\Delta=\mu_1-\mu_2=(-1,0)$, el máximo teórico es $\Delta^\top\Sigma^{-1}\Delta=1/0.76\approx1.32$.
 
 | Método | $J$ (train) | Exactitud (prueba) | Ángulo con Fisher |
 |---|---|---|---|
@@ -97,7 +97,7 @@ Todo es reproducible con `python experiments/run_all.py` (semillas $2026+k$, $k=
 | **Fisher** | **1.19 ± 0.21** | **0.695 ± 0.032** | 0° |
 | PCA (PC1) | 0.20 ± 0.12 | 0.559 ± 0.038 | 83.9° ± 2.8° |
 
-(media ± desv. estándar en 10 repeticiones). Fisher gana en las 10 repeticiones de este escenario. La PC1 apunta a la dirección de máxima varianza (la diagonal de la nube), irrelevante para separar. La dirección de Fisher coincide con `LinearDiscriminantAnalysis` de scikit-learn [4], con `solver="lsqr"` (diferencia $\sim10^{-16}$). Matriz de confusión (repetición 0, fila = real): Fisher $\begin{pmatrix}52&20\\20&58\end{pmatrix}$, diferencia de medias $\begin{pmatrix}44&28\\32&46\end{pmatrix}$, PC1 $\begin{pmatrix}44&28\\35&43\end{pmatrix}$.
+(media ± desv. estándar en 10 repeticiones). Fisher gana en las 10 repeticiones de este escenario. La PC1 apunta a la dirección de máxima varianza (la diagonal de la nube), irrelevante para separar. La dirección de Fisher coincide con `LinearDiscriminantAnalysis` de scikit-learn [4], con `solver="lsqr"` (diferencia $\sim10^{-16}$). Matriz de confusión (repetición 0, fila = real): Fisher $\begin{pmatrix}52&20\cr 20&58\end{pmatrix}$, diferencia de medias $\begin{pmatrix}44&28\cr 32&46\end{pmatrix}$, PC1 $\begin{pmatrix}44&28\cr 35&43\end{pmatrix}$.
 
 **Comparación con el valor teórico.** Como generamos los datos nosotros, conocemos sus medias y su covarianza verdaderas, y podemos calcular cuánto acertaría cada dirección con infinitos datos. Al proyectar sobre $w$, cada clase sigue siendo normal, con medias separadas por $\delta=|w^\top\Delta|$ y desviación $\sigma=\sqrt{w^\top\Sigma w}$; con el umbral en el punto medio, la exactitud es
 $$\Phi\!\left(\frac{\delta}{2\sigma}\right),$$
@@ -192,7 +192,7 @@ Los tres métodos le ganan a la línea base por unos 12 puntos, pero entre ellos
 | Persistencia | 25 / 40 | 0.625 | 19 / 23 |
 | Siempre la clase mayoritaria | 23 / 40 | 0.575 | |
 
-Las cinco reglas aciertan exactamente 25 de 40, y Fisher, PCA y diferencia de medias dan la misma matriz de confusión, $\begin{pmatrix}9&8\\7&16\end{pmatrix}$. Fisher no gana. Además, con solo 40 acciones de prueba, una diferencia de uno o dos aciertos puede deberse al azar, así que no se puede declarar un ganador: una corrida anterior con 110 acciones de entrenamiento daba pesos iguales 70 % y Fisher 60 %, y con 300 acciones esa diferencia desapareció. El resto de esta sección explica por qué Fisher no gana, y es el aporte de Marcelo Torres al proyecto.
+Las cinco reglas aciertan exactamente 25 de 40, y Fisher, PCA y diferencia de medias dan la misma matriz de confusión, $\begin{pmatrix}9&8\cr 7&16\end{pmatrix}$. Fisher no gana. Además, con solo 40 acciones de prueba, una diferencia de uno o dos aciertos puede deberse al azar, así que no se puede declarar un ganador: una corrida anterior con 110 acciones de entrenamiento daba pesos iguales 70 % y Fisher 60 %, y con 300 acciones esa diferencia desapareció. El resto de esta sección explica por qué Fisher no gana, y es el aporte de Marcelo Torres al proyecto.
 
 ## 8.3 Por qué Fisher no gana aquí: descomposición espectral de $w$
 
