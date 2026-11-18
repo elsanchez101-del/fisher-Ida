@@ -43,7 +43,7 @@ rango y condicionamiento de matrices, y regularización.
 | Resultados y comprobaciones | `tests/test_fisher.py`, `results/`, `figures/` y `docs/desarrollo.md` (sec. 7) | Listo |
 | Fuentes citadas (IEEE) | `docs/desarrollo.md` (Referencias) | Listo |
 | Guion del video | `docs/guion_video.md` y `docs/guion_video.pdf` | Listo |
-| Contribuciones de cada integrante | `docs/desarrollo.md` (sec. 11) | Listo |
+| Contribuciones de cada integrante (por diapositivas del video) | `docs/desarrollo.md` (sec. 11) | Listo |
 | Caso aplicado con datos reales | `aplicacion/` y `docs/desarrollo.md` (sec. 8) | Listo |
 | Limitaciones y cronograma | `docs/desarrollo.md` (sec. 9 y 12) | Listo |
 | Declaración de uso de IA | `docs/declaracion_ia.md` | Listo |
