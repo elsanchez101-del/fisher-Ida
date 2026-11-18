@@ -59,7 +59,7 @@ Esto es un cociente de Rayleigh *generalizado*. Si $S_W$ es invertible, podemos 
 $$S_W^{-1}dd^\top(S_W^{-1}d)=(d^\top S_W^{-1}d)\,S_W^{-1}d ,$$
 de modo que $S_W^{-1}d$ es autovector con autovalor $d^\top S_W^{-1}d$. Es justo el máximo y la dirección que obtuvimos en el teorema.
 
-Para $K$ clases, con $n_k$, $\mu_k$, media global $\mu$ y $S_B=\sum_k n_k(\mu_k-\mu)(\mu_k-\mu)^\top$, las direcciones son los autovectores generalizados de mayores autovalores [2], [5]. Como $\sum_k n_k(\mu_k-\mu)=0$, $\operatorname{rango}(S_B)\le K-1$; hay a lo sumo $\min\{p,K-1\}$ direcciones útiles (verificado en `test_rank_SB_multiclass`).
+Para $K$ clases, con $n_k$, $\mu_k$, media global $\mu$ y $S_B=\sum_k n_k(\mu_k-\mu)(\mu_k-\mu)^\top$, las direcciones son los autovectores generalizados de mayores autovalores [2], [5]. Como $\sum_k n_k(\mu_k-\mu)=0$, $\mathrm{rango}(S_B)\le K-1$; hay a lo sumo $\min\{p,K-1\}$ direcciones útiles (verificado en `test_rank_SB_multiclass`).
 
 # 5. Ejemplo calculable a mano
 
@@ -68,8 +68,8 @@ $\mathcal C_1=\{(1,1),(2,1),(2,2)\}$, $\mathcal C_2=\{(4,3),(5,3),(5,4)\}$.
 | Paso | Resultado |
 |---|---|
 | Medias | $\mu_1=(5/3,4/3)$, $\mu_2=(14/3,10/3)$, $d=(-3,-2)$ |
-| Dispersión | $S_1=S_2=\begin{pmatrix}2/3&1/3\cr 1/3&2/3\end{pmatrix}$, $S_W=\begin{pmatrix}4/3&2/3\cr 2/3&4/3\end{pmatrix}$ |
-| Sistema $S_Ww=d$ | $\begin{pmatrix}4&2\cr 2&4\end{pmatrix}w=\begin{pmatrix}-9\cr -6\end{pmatrix}\Rightarrow w=(-2,-\tfrac12)\propto(4,1)$ |
+| Dispersión | $S_1=S_2=\left({2/3 \atop 1/3}\;\;{1/3 \atop 2/3}\right)$, $S_W=\left({4/3 \atop 2/3}\;\;{2/3 \atop 4/3}\right)$ |
+| Sistema $S_Ww=d$ | $\left({4 \atop 2}\;\;{2 \atop 4}\right)w=\left({-9 \atop -6}\right)\Rightarrow w=(-2,-\tfrac12)\propto(4,1)$ |
 | Proyección $y=4x_1+x_2$ | $\mathcal C_1\mapsto\{5,9,10\}$, $\mathcal C_2\mapsto\{19,23,24\}$ |
 | Medias proyectadas y umbral | $m_1=8$, $m_2=22$, $t=15$ |
 
@@ -81,15 +81,15 @@ Regla: $4x_1+x_2<15\Rightarrow\mathcal C_1$. Además $J_{\max}=d^\top S_W^{-1}d=
 
 # 6. Singularidad y regularización
 
-$S_W$ tiene rango a lo sumo $\min(p,N-K)$; es singular si $N-K<p$ o hay variables redundantes. Si $d=d_R+d_0$ con $d_R\in\operatorname{im}S_W$, $d_0\in\ker S_W$ y $d_0\ne0$, el cociente no tiene máximo finito (direcciones con dispersión intraclase cero pero separación positiva). Se regulariza:
-$$S_{W,\lambda}=S_W+\lambda I,\quad w_\lambda=(S_W+\lambda I)^{-1}d,\quad \lambda=\gamma\,\operatorname{tr}(S_W)/p .$$
-Escalamos $\lambda$ con $\operatorname{tr}(S_W)/p$, que es el promedio de los autovalores de $S_W$, es decir, la dispersión típica por variable. Así $\gamma$ no tiene unidades: si multiplicamos todos los datos por una constante $c$, $S_W$ y $\operatorname{tr}(S_W)$ se multiplican por $c^2$, $\lambda$ cambia igual y la dirección $w_\lambda$ no cambia. Además, $\gamma$ dice directamente cuánto pesa $\lambda I$ frente a $S_W$: con $\gamma=1$, el término agregado es del mismo tamaño que la dispersión promedio. Hay que tener claro que así ya no se maximiza el criterio original, sino uno modificado [5]. Cuando $\lambda$ es muy grande, el término $\lambda I$ domina sobre $S_W$ y $w_\lambda$ apunta casi en la dirección de $d$, como en el caso $S_W=\sigma^2 I$. El valor de $\gamma$ lo elegimos solo con validación dentro del entrenamiento.
+$S_W$ tiene rango a lo sumo $\min(p,N-K)$; es singular si $N-K<p$ o hay variables redundantes. Si $d=d_R+d_0$ con $d_R\in\mathrm{im}S_W$, $d_0\in\ker S_W$ y $d_0\ne0$, el cociente no tiene máximo finito (direcciones con dispersión intraclase cero pero separación positiva). Se regulariza:
+$$S_{W,\lambda}=S_W+\lambda I,\quad w_\lambda=(S_W+\lambda I)^{-1}d,\quad \lambda=\gamma\,\mathrm{tr}(S_W)/p .$$
+Escalamos $\lambda$ con $\mathrm{tr}(S_W)/p$, que es el promedio de los autovalores de $S_W$, es decir, la dispersión típica por variable. Así $\gamma$ no tiene unidades: si multiplicamos todos los datos por una constante $c$, $S_W$ y $\mathrm{tr}(S_W)$ se multiplican por $c^2$, $\lambda$ cambia igual y la dirección $w_\lambda$ no cambia. Además, $\gamma$ dice directamente cuánto pesa $\lambda I$ frente a $S_W$: con $\gamma=1$, el término agregado es del mismo tamaño que la dispersión promedio. Hay que tener claro que así ya no se maximiza el criterio original, sino uno modificado [5]. Cuando $\lambda$ es muy grande, el término $\lambda I$ domina sobre $S_W$ y $w_\lambda$ apunta casi en la dirección de $d$, como en el caso $S_W=\sigma^2 I$. El valor de $\gamma$ lo elegimos solo con validación dentro del entrenamiento.
 
 # 7. Resultados con datos sintéticos
 
 Todo es reproducible con `python experiments/run_all.py` (semillas $2026+k$, $k=0,\dots,9$).
 
-**Experimento A: gaussianas correlacionadas.** $\mu_1=(0,0)$, $\mu_2=(1,0)$, $\Sigma=\begin{pmatrix}4&1.8\cr 1.8&1\end{pmatrix}$ (definida positiva: $\det=0.76$). 150 puntos por clase; división 50 % entrenamiento / 50 % prueba hecha antes del ajuste. Misma regla de umbral (punto medio de medias proyectadas de entrenamiento) para las tres direcciones. Para reportar $J$ usamos $\hat\Sigma=S_W/(N-2)$ en lugar de $S_W$. La razón es que $S_W$ es una suma sobre todos los puntos y crece con $N$, mientras que $\hat\Sigma$ es la covarianza agrupada y no depende del tamaño de la muestra; así el valor se puede comparar con el teórico. Con $\Delta=\mu_1-\mu_2=(-1,0)$, el máximo teórico es $\Delta^\top\Sigma^{-1}\Delta=1/0.76\approx1.32$.
+**Experimento A: gaussianas correlacionadas.** $\mu_1=(0,0)$, $\mu_2=(1,0)$, $\Sigma=\left({4 \atop 1.8}\;\;{1.8 \atop 1}\right)$ (definida positiva: $\det=0.76$). 150 puntos por clase; división 50 % entrenamiento / 50 % prueba hecha antes del ajuste. Misma regla de umbral (punto medio de medias proyectadas de entrenamiento) para las tres direcciones. Para reportar $J$ usamos $\hat\Sigma=S_W/(N-2)$ en lugar de $S_W$. La razón es que $S_W$ es una suma sobre todos los puntos y crece con $N$, mientras que $\hat\Sigma$ es la covarianza agrupada y no depende del tamaño de la muestra; así el valor se puede comparar con el teórico. Con $\Delta=\mu_1-\mu_2=(-1,0)$, el máximo teórico es $\Delta^\top\Sigma^{-1}\Delta=1/0.76\approx1.32$.
 
 | Método | $J$ (train) | Exactitud (prueba) | Ángulo con Fisher |
 |---|---|---|---|
@@ -97,7 +97,7 @@ Todo es reproducible con `python experiments/run_all.py` (semillas $2026+k$, $k=
 | **Fisher** | **1.19 ± 0.21** | **0.695 ± 0.032** | 0° |
 | PCA (PC1) | 0.20 ± 0.12 | 0.559 ± 0.038 | 83.9° ± 2.8° |
 
-(media ± desv. estándar en 10 repeticiones). Fisher gana en las 10 repeticiones de este escenario. La PC1 apunta a la dirección de máxima varianza (la diagonal de la nube), irrelevante para separar. La dirección de Fisher coincide con `LinearDiscriminantAnalysis` de scikit-learn [4], con `solver="lsqr"` (diferencia $\sim10^{-16}$). Matriz de confusión (repetición 0, fila = real): Fisher $\begin{pmatrix}52&20\cr 20&58\end{pmatrix}$, diferencia de medias $\begin{pmatrix}44&28\cr 32&46\end{pmatrix}$, PC1 $\begin{pmatrix}44&28\cr 35&43\end{pmatrix}$.
+(media ± desv. estándar en 10 repeticiones). Fisher gana en las 10 repeticiones de este escenario. La PC1 apunta a la dirección de máxima varianza (la diagonal de la nube), irrelevante para separar. La dirección de Fisher coincide con `LinearDiscriminantAnalysis` de scikit-learn [4], con `solver="lsqr"` (diferencia $\sim10^{-16}$). Matriz de confusión (repetición 0, fila = real): Fisher $\left({52 \atop 20}\;\;{20 \atop 58}\right)$, diferencia de medias $\left({44 \atop 32}\;\;{28 \atop 46}\right)$, PC1 $\left({44 \atop 35}\;\;{28 \atop 43}\right)$.
 
 **Comparación con el valor teórico.** Como generamos los datos nosotros, conocemos sus medias y su covarianza verdaderas, y podemos calcular cuánto acertaría cada dirección con infinitos datos. Al proyectar sobre $w$, cada clase sigue siendo normal, con medias separadas por $\delta=|w^\top\Delta|$ y desviación $\sigma=\sqrt{w^\top\Sigma w}$; con el umbral en el punto medio, la exactitud es
 $$\Phi\!\left(\frac{\delta}{2\sigma}\right),$$
@@ -115,7 +115,7 @@ Los tres métodos quedan cerca de su valor teórico y en el mismo orden, lo que 
 
 ![Histogramas de proyecciones en prueba](../figures/gauss_histogramas.png){width=95%}
 
-**Experimento B: pocas muestras y variable redundante.** $p=40$ variables (2 informativas, 1 copia ruidosa de $x_1$, 37 de ruido), solo $N=30$ de entrenamiento y 1000 de prueba; $\mu_2=(1.5,0)$ en las dos primeras. Aquí $\operatorname{rango}(S_W)\le N-2=28<40$: en la repetición 0, $S_W$ tiene 12 autovalores nulos y número de condición $\sim10^{18}$.
+**Experimento B: pocas muestras y variable redundante.** $p=40$ variables (2 informativas, 1 copia ruidosa de $x_1$, 37 de ruido), solo $N=30$ de entrenamiento y 1000 de prueba; $\mu_2=(1.5,0)$ en las dos primeras. Aquí $\mathrm{rango}(S_W)\le N-2=28<40$: en la repetición 0, $S_W$ tiene 12 autovalores nulos y número de condición $\sim10^{18}$.
 
 | $\gamma$ | Exactitud media (prueba) | Desviación estándar |
 |---|---|---|
@@ -158,7 +158,7 @@ Tomamos acciones del S&P 500 sin los sectores financiero e inmobiliario (su apal
 | Variable | Qué mide | Cómo se calcula |
 |---|---|---|
 | $\sigma$ | volatilidad anual | desviación estándar de los retornos diarios $\times\sqrt{252}$ |
-| $\beta$ | sensibilidad al mercado | $\operatorname{Cov}(r_{\text{acción}},r_{\text{S\&P}})/\operatorname{Var}(r_{\text{S\&P}})$ |
+| $\beta$ | sensibilidad al mercado | $\mathrm{Cov}(r_{\text{acción}},r_{\text{S\&P}})/\mathrm{Var}(r_{\text{S\&P}})$ |
 | MDD | caída máxima pasada | mayor caída porcentual desde un máximo previo en la ventana |
 | $\log(1+D/E)$ | apalancamiento | deuda total entre patrimonio, último balance anual antes de la ventana; el logaritmo corrige la asimetría (hay valores desde 0 hasta 99) |
 
@@ -192,7 +192,7 @@ Los tres métodos le ganan a la línea base por unos 12 puntos, pero entre ellos
 | Persistencia | 25 / 40 | 0.625 | 19 / 23 |
 | Siempre la clase mayoritaria | 23 / 40 | 0.575 | |
 
-Las cinco reglas aciertan exactamente 25 de 40, y Fisher, PCA y diferencia de medias dan la misma matriz de confusión, $\begin{pmatrix}9&8\cr 7&16\end{pmatrix}$. Fisher no gana. Además, con solo 40 acciones de prueba, una diferencia de uno o dos aciertos puede deberse al azar, así que no se puede declarar un ganador: una corrida anterior con 110 acciones de entrenamiento daba pesos iguales 70 % y Fisher 60 %, y con 300 acciones esa diferencia desapareció. El resto de esta sección explica por qué Fisher no gana, y es el aporte de Marcelo Torres al proyecto.
+Las cinco reglas aciertan exactamente 25 de 40, y Fisher, PCA y diferencia de medias dan la misma matriz de confusión, $\left({9 \atop 7}\;\;{8 \atop 16}\right)$. Fisher no gana. Además, con solo 40 acciones de prueba, una diferencia de uno o dos aciertos puede deberse al azar, así que no se puede declarar un ganador: una corrida anterior con 110 acciones de entrenamiento daba pesos iguales 70 % y Fisher 60 %, y con 300 acciones esa diferencia desapareció. El resto de esta sección explica por qué Fisher no gana, y es el aporte de Marcelo Torres al proyecto.
 
 ## 8.3 Por qué Fisher no gana aquí: descomposición espectral de $w$
 
@@ -226,9 +226,9 @@ La exactitud no se mueve mientras $w$ gira 18.6° hasta coincidir con $d$. Es el
 
 ![Camino de regularización](../aplicacion/figuras/camino_regularizacion.png){width=100%}
 
-## 8.5 Tres clases y el plano $\operatorname{span}(w_1,w_2)$
+## 8.5 Tres clases y el plano $\mathrm{span}(w_1,w_2)$
 
-Para ver en dos dimensiones lo que pasa en $\mathbb R^4$ usamos el caso multiclase de la sección 4 con tres niveles de riesgo según la caída del año siguiente: bajo ($\le20$ %, 91 acciones), medio (81) y alto ($>30$ %, 128). Como $\operatorname{rango}(S_B)=K-1=2$ (lo verifica el código), el problema $S_Bw=\lambda S_Ww$ tiene solo dos autovalores no nulos, 0.320 y 0.007, y sus autovectores $w_1,w_2$ generan el plano donde las tres clases quedan lo más separadas posible, sin elegirlo a mano. Casi toda la separación está en $w_1\approx(0.55,0.69,0.44,-0.16)$, otra vez "riesgo general". En la figura, la clase alta queda a la derecha sobre $w_1$, y la baja y la media se mezclan bastante, lo que muestra que con estas cuatro variables es difícil separar los tres niveles.
+Para ver en dos dimensiones lo que pasa en $\mathbb R^4$ usamos el caso multiclase de la sección 4 con tres niveles de riesgo según la caída del año siguiente: bajo ($\le20$ %, 91 acciones), medio (81) y alto ($>30$ %, 128). Como $\mathrm{rango}(S_B)=K-1=2$ (lo verifica el código), el problema $S_Bw=\lambda S_Ww$ tiene solo dos autovalores no nulos, 0.320 y 0.007, y sus autovectores $w_1,w_2$ generan el plano donde las tres clases quedan lo más separadas posible, sin elegirlo a mano. Casi toda la separación está en $w_1\approx(0.55,0.69,0.44,-0.16)$, otra vez "riesgo general". En la figura, la clase alta queda a la derecha sobre $w_1$, y la baja y la media se mezclan bastante, lo que muestra que con estas cuatro variables es difícil separar los tres niveles.
 
 ![Tres clases: plano de Fisher y plano de PCA](../aplicacion/figuras/tres_clases_span.png){width=100%}
 
