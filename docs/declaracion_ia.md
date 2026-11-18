@@ -7,13 +7,11 @@ Según la sección 9 de las bases del proyecto, declaramos el uso de herramienta
 ## 1. Apoyo en la investigación
 
 - **Finalidad:** entender el discriminante de Fisher, elegir el tema del proyecto y revisar que el trabajo cumpliera las bases y la rúbrica del curso.
-- **Instrucciones relevantes:** "¿Cuál tema se adapta mejor al proyecto?", "¿En qué consiste el de Fisher?", "Explícame de qué va el proyecto que hemos desarrollado", "Verifica todo el trabajo punto por punto", "Evalúa esto" (con cada criterio de la rúbrica).
 - **Partes del trabajo:** comparación entre los temas propuestos; explicación del problema, del criterio de Fisher y de los resultados; revisión del repositorio frente a la rúbrica; propuesta de justificaciones para el desarrollo matemático (existencia de $S_W^{1/2}$, autovalor de una matriz de rango 1, umbral en el punto medio, escala de $\lambda$) y de la comparación con la exactitud teórica $\Phi(\delta/2\sigma)$.
 
 ## 2. Apoyo en la elaboración de código
 
 - **Finalidad:** revisar y mejorar la implementación y los experimentos.
-- **Instrucciones relevantes:** "Revisa el código, ¿no se puede hacer alguna mejora ahí?", "Aplica todo".
 - **Partes del trabajo:**
   - `src/fisher.py`: error cuando las medias coinciden, aviso cuando $S_W$ es numéricamente singular, opción de pseudoinversa para comparar, revisión del denominador de $J$ y la función `theoretical_accuracy`.
   - `tests/test_fisher.py`: 6 pruebas nuevas (medias iguales, $\gamma$ grande, intercambio de etiquetas, $J$ indefinido, $S_W$ singular y exactitud teórica).
@@ -25,18 +23,6 @@ Según la sección 9 de las bases del proyecto, declaramos el uso de herramienta
 - **Finalidad:** ordenar y redactar con mayor claridad la documentación de la entrega parcial.
 - **Partes del trabajo:** formato IEEE de las referencias; redacción del guion del video para los cuatro integrantes; README con el estado de la entrega.
 - **Entrega final:** simplificación del código (`experiments/run_all.py`, `verificar.py`) y de la sección 8 del documento; revisión de las diapositivas del video para que sus números coincidan con el repositorio y reescritura del guion en lenguaje hablado; materiales de estudio para preparar la ronda de preguntas. El reparto de diapositivas y el contenido que expone cada integrante fueron decididos por el grupo.
-
-## 4. Apoyo en el caso aplicado (entrega final)
-
-- **Finalidad:** integrar al repositorio el caso de riesgo de acciones, hecho por un integrante en scripts separados, y analizar por qué Fisher no gana en datos reales.
-- **Instrucciones relevantes:** "Evalúa este proyecto y las mejoras que quiero implementar", "Explícame mejor mi aporte", "¿Ahora qué falta?".
-- **Partes del trabajo:**
-  - `aplicacion/`: reorganización de los scripts originales (`datos_300.py`, `escenarios_lda_pca.py`, `validacion_externa.py`) en un módulo común `comun.py`, rutas relativas, datos guardados en `datos/` para que todo corra sin internet, y `correr_todo.py`. Se comprobó que los scripts reorganizados dan exactamente los mismos números que los originales.
-  - Análisis nuevos propuestos y programados con apoyo de la herramienta: `analisis_espectral.py` (descomposición $w=\sum_i (u_i^\top d/\lambda_i)u_i$ y camino de regularización) y `tres_clases.py` (Fisher multiclase y plano generado por $w_1$ y $w_2$). Otros análisis que se probaron (AUC, intervalos de confianza, McNemar y bootstrap) se retiraron en la versión final para mantener el trabajo dentro del alcance del curso.
-  - `tests/test_aplicacion.py`: 6 pruebas nuevas.
-  - `verificar.py`: comprobación de reproducibilidad con un solo comando.
-  - Redacción de la sección 8 de `docs/desarrollo.md`, del bloque correspondiente del guion y de la actualización del README, a partir de los resultados obtenidos por el grupo; corrección de inconsistencias del borrador original (notación, número de pruebas, factor $N-2$ en la distancia de Mahalanobis).
-- Los datos fueron descargados y los scripts ejecutados por los integrantes en sus propias computadoras; la interpretación de los resultados fue discutida con la herramienta y cada integrante puede explicarla.
 
 ## Procedimientos de verificación
 
