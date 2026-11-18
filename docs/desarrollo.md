@@ -251,14 +251,14 @@ Fisher llega a su dirección con una idea geométrica (separar medias y compacta
 
 # 11. Organización del equipo y contribuciones
 
-Cada integrante se encargó de las siguientes partes del proyecto:
+Para la entrega final acordamos que el aporte de cada integrante son sus tres diapositivas del video: cada uno preparó el contenido de esas diapositivas, lo explica en el video y responde por él en la ronda de preguntas.
 
-| Integrante | Responsabilidad principal | Actividades |
-|---|---|---|
-| Elison Sanchez | Fundamentos matemáticos | Formulación del criterio de Fisher, demostración matemática y revisión de la notación. En la entrega final: planteamiento del caso aplicado, descarga y construcción del conjunto de acciones, validación interna y externa (secciones 8.1 y 8.2). |
-| Rodolfo Brandariz | Desarrollo matemático aplicado | Resolución del ejemplo manual, cálculo de matrices de dispersión y explicación de las proyecciones. |
-| Marcelo Bravo | Implementación computacional | Desarrollo y revisión del código Python, implementación del algoritmo y comparación con PCA. |
-| Marcelo Torres | Experimentación y documentación | Experimentos de regularización, análisis de resultados, gráficos y documentación del repositorio. En la entrega final: integración del caso aplicado al repositorio y análisis de por qué Fisher no gana en datos reales (descomposición espectral, camino de regularización y tres clases, secciones 8.3 a 8.5). |
+| Integrante | Diap. | Contenido que preparó y expone | Dónde está en el proyecto |
+|-----------|------|---------------------------------------|------------------------|
+| Elison Sanchez | 1 a 3 | Presentación; problema, objetivo y alcance; riesgo financiero como dispersión del retorno, las cuatro variables de cada acción y la etiqueta del caso aplicado. | Secciones 1 y 8.1; `aplicacion/datos_300.py` |
+| Marcelo Torres | 4 a 6 | Criterio de Fisher $J(w)$; demostración de que $w \propto S_W^{-1}(\mu_2-\mu_1)$ con el teorema espectral y Cauchy–Schwarz; cálculo de $w$ con un sistema lineal y ejemplo a mano ($w \propto (4,1)$, umbral 15, $J = 7$). | Secciones 2, 3, 4 y 5; `src/fisher.py`; prueba `test_manual_example` |
+| Marcelo Bravo | 7 a 9 | Experimento A (Fisher frente a PCA y a la diferencia de medias, con el valor teórico) y verificaciones del código; experimento B (matriz singular y regularización); resultados de la validación interna y externa con acciones. | Secciones 6, 7 y 8.2; `experiments/run_all.py`; `tests/`; `verificar.py` |
+| Rodolfo Brandariz | 10 a 12 | Pesos de $w$ y caso de tres clases; interpretación con autovalores de por qué Fisher no gana en las acciones; conclusiones, limitaciones y referencias. | Secciones 8.3 a 8.6, 9 y Referencias; `aplicacion/analisis_espectral.py`; `aplicacion/tres_clases.py` |
 
 # 12. Cronograma de actividades
 
@@ -277,13 +277,13 @@ Cada integrante se encargó de las siguientes partes del proyecto:
 
 | Actividad | Responsable(s) | Estado |
 |-----------------------------------|-------------|---------|
-| Caso aplicado con datos reales: planteamiento, datos y validaciones | Elison Sanchez | Completado |
-| Integrar el caso aplicado al repositorio (carpeta `aplicacion/`, datos guardados, pruebas) | Marcelo Torres | Completado |
-| Análisis de por qué Fisher no gana en datos reales y caso de tres clases | Marcelo Torres | Completado |
-| Actualizar el documento, el README y el guion con el caso aplicado | Marcelo Torres | Completado |
-| Preparar las diapositivas y figuras del video | Todos los integrantes | Pendiente |
-| Grabar el video, cada uno su parte del guion | Rodolfo Brandariz coordina; todos | Pendiente |
-| Revisión final del repositorio y etiqueta `entrega-final` | Rodolfo Brandariz y Marcelo Torres | Pendiente |
+| Caso aplicado con datos reales, integrado en `aplicacion/` | Todos los integrantes | Completado |
+| Diapositivas 1 a 3 y su parte del guion | Elison Sanchez | Completado |
+| Diapositivas 4 a 6 y su parte del guion | Marcelo Torres | Completado |
+| Diapositivas 7 a 9 y su parte del guion | Marcelo Bravo | Completado |
+| Diapositivas 10 a 12 y su parte del guion | Rodolfo Brandariz | Completado |
+| Grabar el video, cada uno sus tres diapositivas | Todos los integrantes | Pendiente |
+| Revisión final del repositorio y etiqueta `entrega-final` | Todos los integrantes | Pendiente |
 | Preparar la ronda de preguntas (repasar todo el proyecto) | Todos los integrantes | Pendiente |
 
 # Referencias

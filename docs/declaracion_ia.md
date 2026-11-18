@@ -24,6 +24,7 @@ Según la sección 9 de las bases del proyecto, declaramos el uso de herramienta
 
 - **Finalidad:** ordenar y redactar con mayor claridad la documentación de la entrega parcial.
 - **Partes del trabajo:** formato IEEE de las referencias; redacción del guion del video para los cuatro integrantes; README con el estado de la entrega.
+- **Entrega final:** simplificación del código (`experiments/run_all.py`, `verificar.py`) y de la sección 8 del documento; revisión de las diapositivas del video para que sus números coincidan con el repositorio y reescritura del guion en lenguaje hablado; materiales de estudio para preparar la ronda de preguntas. El reparto de diapositivas y el contenido que expone cada integrante fueron decididos por el grupo.
 
 ## 4. Apoyo en el caso aplicado (entrega final)
 
@@ -31,7 +32,7 @@ Según la sección 9 de las bases del proyecto, declaramos el uso de herramienta
 - **Instrucciones relevantes:** "Evalúa este proyecto y las mejoras que quiero implementar", "Explícame mejor mi aporte", "¿Ahora qué falta?".
 - **Partes del trabajo:**
   - `aplicacion/`: reorganización de los scripts originales (`datos_300.py`, `escenarios_lda_pca.py`, `validacion_externa.py`) en un módulo común `comun.py`, rutas relativas, datos guardados en `datos/` para que todo corra sin internet, y `correr_todo.py`. Se comprobó que los scripts reorganizados dan exactamente los mismos números que los originales.
-  - Análisis nuevos propuestos y programados con apoyo de la herramienta: `analisis_espectral.py` (descomposición $w=\sum_i (u_i^\top d/\lambda_i)u_i$, señal/ruido por componente y camino de regularización), `comparacion_sin_umbral.py` (AUC, intervalos de Wilson, McNemar), `estabilidad_pesos.py` (bootstrap) y `tres_clases.py` (Fisher multiclase y plano $\operatorname{span}(w_1,w_2)$).
+  - Análisis nuevos propuestos y programados con apoyo de la herramienta: `analisis_espectral.py` (descomposición $w=\sum_i (u_i^\top d/\lambda_i)u_i$ y camino de regularización) y `tres_clases.py` (Fisher multiclase y plano $\operatorname{span}(w_1,w_2)$). Otros análisis que se probaron (AUC, intervalos de confianza, McNemar y bootstrap) se retiraron en la versión final para mantener el trabajo dentro del alcance del curso.
   - `tests/test_aplicacion.py`: 6 pruebas nuevas.
   - `verificar.py`: comprobación de reproducibilidad con un solo comando.
   - Redacción de la sección 8 de `docs/desarrollo.md`, del bloque correspondiente del guion y de la actualización del README, a partir de los resultados obtenidos por el grupo; corrección de inconsistencias del borrador original (notación, número de pruebas, factor $N-2$ en la distancia de Mahalanobis).
@@ -44,4 +45,4 @@ Según la sección 9 de las bases del proyecto, declaramos el uso de herramienta
 - Recalculamos a mano el ejemplo de la sección 5 de `docs/desarrollo.md` ($w\propto(4,1)$, umbral 15, $J=7$) y lo comparamos con el código.
 - Comparamos la dirección de Fisher con `LinearDiscriminantAnalysis` de scikit-learn (diferencia del orden de $10^{-16}$).
 - Comparamos las exactitudes obtenidas con los valores teóricos de la distribución que generó los datos.
-- En el caso aplicado, dos ejecuciones seguidas de `aplicacion/correr_todo.py` dan tablas idénticas; la dirección de Fisher coincide con scikit-learn (coseno 1); la suma espectral reconstruye $\hat\Sigma^{-1}d$ (comprobado con `assert` en el script); el AUC coincide con `roc_auc_score` de scikit-learn; y `python verificar.py` repite todo lo anterior y compara con las tablas guardadas.
+- En el caso aplicado, dos ejecuciones seguidas de `aplicacion/correr_todo.py` dan tablas idénticas; la dirección de Fisher coincide con scikit-learn (coseno 1); la suma espectral reconstruye $\hat\Sigma^{-1}d$ (comprobado con `assert` en el script); y `python verificar.py` repite todo lo anterior y compara con las tablas guardadas.
